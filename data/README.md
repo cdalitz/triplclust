@@ -33,9 +33,9 @@ For visualization of the results, you can use gnuplot, e.g.:
 Author & Copyright
 ------------------
 
-Christoph Dalitz 2018
-Institute for Pattern Recognition
-Niederrhein University of Applied Sciences
+Christoph Dalitz, 2018  
+Institute for Pattern Recognition  
+Niederrhein University of Applied Sciences  
 Krefeld, Germany
 
 These files can be freely used, copied, modified and distributed under
