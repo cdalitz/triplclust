@@ -1,0 +1,25 @@
+C++ Kd-Tree Library
+===================
+
+This is a standalone C++ version of the kd-tree implementation in the
+Gamera framework that has been extended by a range search and has
+been relicensed by the original author under a BSD style license.
+
+Usage of the library
+--------------------
+
+Design and usage of the library are described in detail in
+
+C. Dalitz: Kd-Trees for Document Layout Analysis.
+In C. Dalitz (Ed.): "Document Image Analysis with the Gamera Framework."
+Schriftenreihe des Fachbereichs Elektrotechnik und Informatik,
+Hochschule Niederrhein, vol. 8, pp. 39-52, Shaker Verlag (2009)
+
+
+Authors & Copyright
+-------------------
+
+Christoph Dalitz, 2018, <http://www.hsnr.de/ipattern/>
+Jens Wilberg, 2018, <http://www.hsnr.de/ipattern/>
+
+For licensing information, see the file LICENSE for details.

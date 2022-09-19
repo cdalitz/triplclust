@@ -1,0 +1,41 @@
+#!/bin/sh
+
+#
+# maketgz - creates TGZ archive of source code
+#
+
+VERSION=""
+
+
+#
+# parse command line arguments
+#
+USAGEMSG="USAGE: `basename $0` -v version"
+while [ $# -gt 0 ]
+do
+    case "$1" in
+      -v) VERSION="$2"; shift;;
+      *)  echo "$USAGEMSG" 1>&2; exit 1;;
+    esac
+    shift
+done
+
+if [ -z "$VERSION" ]
+then
+    echo "$USAGEMSG" 1>&2
+    exit 1
+fi
+
+#
+# build archive
+#
+DIR=triplclust-$VERSION
+
+ln -s . $DIR
+
+tar czvf $DIR.tgz \
+    $DIR/README.txt $DIR/CMakeLists.txt $DIR/CHANGES $DIR/LICENSE \
+	$DIR/test.dat $DIR/cdist-plot.r $DIR/src $DIR/data
+
+# clean up
+rm $DIR

@@ -1,9 +1,9 @@
 ﻿Copyright:
-  * (C) 2018 Christoph Dalitz, Jens Wilberg, Lukas Aymans
+  * 2018 Christoph Dalitz and Jens Wilberg
     Niederrhein University of Applied Sciences,
-	Institute for Pattern Recognition <http://www.hsnr.de/ipattern/>
-  * the clustering uses the fastcluster implementation by Daniel Müllner
-    see the file src/hclust/LICENSE for its copyright and licensing information
+	Institute for Pattern Recognition,
+	Reinarzstr. 49, 47805 Krefeld, Germany
+	<http://www.hsnr.de/ipattern/>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:

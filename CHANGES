@@ -1,0 +1,29 @@
+Change log of triplclust
+=========================
+
+Version 1.3 from 2019-04-02
+---------------------------
+
+ - floats no longer converted to int by ostream
+
+ - windows line endings ("\r\n") now possible in input file, too
+
+
+Version 1.2 from 2019-03-22
+---------------------------
+
+ - error message when dnn is computed as zero due to too many identical points
+
+
+Version 1.1 from 2018-12-12
+---------------------------
+
+ - cdist-plot.r now also works if no threshold is found
+
+ - data directory added
+
+
+Version 1.0 from 2018-09-03
+---------------------------
+
+ - first creation
