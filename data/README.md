@@ -19,15 +19,10 @@ Depending on the file, the following command line paramters should
 be used:
 
     triplclust attpc.dat
-
     triplclust lidar.dat -k 12  -t 12
-
     triplclust radar.dat -a 0.003
-
     triplclust synthetic-clean.dat
-
     triplclust synthetic-noise.dat -r 1.0
-
     triplclust tennis.dat -k 12
 
 For visualization of the results, you can use gnuplot, e.g.:
