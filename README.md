@@ -128,10 +128,11 @@ in the IPOL paper.
 Authors & Copyright
 -------------------
 
-Jens Wilberg, Christoph Dalitz, Lukas Aymans, 2017-2018
-Institute for Pattern Recognition
-Niederrhein University of Applied Sciences
+Jens Wilberg, Christoph Dalitz, Lukas Aymans, 2017-2018  
+Institute for Pattern Recognition  
+Niederrhein University of Applied Sciences  
 Krefeld, Germany
 
 The software includes parts of the fastcluster library by Daniel Müllner,
-available from http://danifold.net. See the directory src/hclust for details.
+available from http://danifold.net. See the directory ``src/hclust``
+for details.
