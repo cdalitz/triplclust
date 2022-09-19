@@ -62,12 +62,12 @@ additionally printed to stdout with the prefix "[Info]".
 
 Example calls with the provided test file 'test.dat':
 
-  1) direct visualization with gnuplot:
-     $ triplclust test.dat -gnuplot | gnuplot -persist
+  1) direct visualization with gnuplot:  
+     ``$ triplclust test.dat -gnuplot | gnuplot -persist``
 
   2) write result to files result.csv and result.gnuplot and print
-     automatically computed parameters:
-     $ triplclust test.dat -v -oprefix result -gnuplot
+     automatically computed parameters:  
+     ``$ triplclust test.dat -v -oprefix result -gnuplot``
 
 When the option "-vv" is given, data files documenting intermediate steps
 of the algorithm are written: "debug_smoothed.csv" and "debug_smoothed.gnuplot"
@@ -78,49 +78,50 @@ good stopping thresholds for the clustering. A plot similar to Figure 4 in
 the IPOL paper can be created with the R script "cdist-plot.r".
 Example ("$" is the shell prompt)::
 
-  $ triplclust test.dat -vv
-  $ Rscript cdist-plot.r
-  cdist plot is written to 'debug_cdist.pdf'
+    $ triplclust test.dat -vv
+    $ Rscript cdist-plot.r
+    cdist plot is written to 'debug_cdist.pdf'
 
 
 Source Files
 ------------
 
-main.cpp
+ - ``main.cpp``  
    Main program that calls the four steps of the algorithm
    (beginning of section 2 in the IPOL paper)
 
-pointcloud.[h|cpp]
+ - ``pointcloud.[h|cpp]``  
    Implementation of 3D points and clouds thereof,
    and the position smoothing described in section 2.1 of the IPOL paper
 
-triplet.[h|cpp]
+ - ``triplet.[h|cpp]``
    Implementation of triplets of three points and their grouping
    (section 2.2 of the IPOL paper), and of the triplet distance
    (section 2.3.1 of the IPOL paper)
 
-cluster.[h|cpp]
+ - ``cluster.[h|cpp]``
    Implementation of the hierarchical clustering and the stopping
    criterion (section 2.3.2 of the IPOL paper)
 
-graph.[h|cpp]
+ - ``graph.[h|cpp]``
    Implementation of the optional split up of clusters at gaps
    (section 2.4 of the IPOL paper)
 
-dnn.[h|cpp]
+ - ``dnn.[h|cpp]``
    Implementation of the characteristic length computation
    (section 3.1 of the IPOL paper)
 
-option.[h|cpp]
+ - ``option.[h|cpp]``
    Utilities for handling and storing command line options.
 
-util.[h|cpp]
+ - ``util.[h|cpp]``
    Convenience functions not fitting elsewhere.
 
-The subdirectories hclust/ and kdtree/ contain the fastcluster implementation
-by Daniel Müllner and the kd-tree implementation by Christoph Dalitz.
+The subdirectories ``hclust/`` and ``kdtree/`` contain the fastcluster
+implementation by Daniel Müllner and the kd-tree implementation by
+Christoph Dalitz.
 
-The subdirectory data/ contains the six reference point clouds discussed
+The subdirectory ``data/`` contains the six reference point clouds discussed
 in the IPOL paper.
 
 
