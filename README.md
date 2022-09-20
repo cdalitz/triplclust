@@ -1,7 +1,7 @@
 TriplClust: Curve Detection in 3D Point Clouds
 ==============================================
 
-triplclust reads a 3D or 2D point cloud from a CSV file and assigns
+TriplClust reads a 3D or 2D point cloud from a CSV file and assigns
 each point cluster labels representing curves or noise.
 
 This code implements the algorithm described in (cited as "IPOL paper" below):
@@ -9,6 +9,7 @@ This code implements the algorithm described in (cited as "IPOL paper" below):
 > C. Dalitz, J. Wilberg, L. Aymans: "TriplClust: An Algorithm
 > for Curve Detection in 3D Point Clouds."
 > Image Processing Online 9, pp. 26-46 (2019)
+> https://doi.org/10.5201/ipol.2019.234
 
 Please cite this article when using the code. The article was published
 on IPOL with version 1.3 of this code. For changes since then, see the file
