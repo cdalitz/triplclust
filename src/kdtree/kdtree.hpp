@@ -2,10 +2,11 @@
 #define __kdtree_HPP
 
 //
-// KdTree implementation.
+// Kd-Tree implementation.
 //
-// Copyright: Christoph Dalitz, 2018
+// Copyright: Christoph Dalitz, 2018-2022
 //            Jens Wilberg, 2018
+// Version:   1.2
 // License:   BSD style license
 //            (see the file LICENSE for details)
 //
@@ -23,9 +24,11 @@ typedef std::vector<double> DoubleVector;
 struct KdNode {
   CoordPoint point;
   void* data;
-  KdNode(const CoordPoint& p, void* d = NULL) {
+  int index;
+  KdNode(const CoordPoint& p, void* d = NULL, int i = -1) {
     point = p;
     data = d;
+    index = i;
   }
   KdNode() { data = NULL; }
 };
@@ -37,7 +40,7 @@ typedef std::vector<KdNode> KdNodeVector;
 // and overwrite the call operator operator()
 struct KdNodePredicate {
   virtual ~KdNodePredicate() {}
-  virtual bool operator()(const KdNode& kn) const { return true; }
+  virtual bool operator()(const KdNode&) const { return true; }
 };
 
 //--------------------------------------------------------
@@ -63,6 +66,7 @@ class compare_nn4heap {
     return (n.distance < m.distance);
   }
 };
+  typedef std::priority_queue<nn4heap, std::vector<nn4heap>, compare_nn4heap> SearchQueue;
 //--------------------------------------------------------
 
 // kdtree class
@@ -72,14 +76,10 @@ class KdTree {
   kdtree_node* build_tree(size_t depth, size_t a, size_t b);
   // helper variable for keeping track of subtree bounding box
   CoordPoint lobound, upbound;
-  // helper variables and functions for k nearest neighbor search
-  std::priority_queue<nn4heap, std::vector<nn4heap>, compare_nn4heap>*
-      neighborheap;
-  std::vector<size_t> range_result;
   // helper variable to check the distance method
   int distance_type;
-  bool neighbor_search(const CoordPoint& point, kdtree_node* node, size_t k);
-  void range_search(const CoordPoint& point, kdtree_node* node, double r);
+  bool neighbor_search(const CoordPoint& point, kdtree_node* node, size_t k, SearchQueue* neighborheap);
+  void range_search(const CoordPoint& point, kdtree_node* node, double r, std::vector<size_t>* range_result);
   bool bounds_overlap_ball(const CoordPoint& point, double dist,
                            kdtree_node* node);
   bool ball_within_bounds(const CoordPoint& point, double dist,
@@ -98,8 +98,7 @@ class KdTree {
   ~KdTree();
   void set_distance(int distance_type, const DoubleVector* weights = NULL);
   void k_nearest_neighbors(const CoordPoint& point, size_t k,
-                           KdNodeVector* result, std::vector<double>* distances,
-                           KdNodePredicate* pred = NULL);
+                           KdNodeVector* result, KdNodePredicate* pred = NULL);
   void range_nearest_neighbors(const CoordPoint& point, double r,
                                KdNodeVector* result);
 };

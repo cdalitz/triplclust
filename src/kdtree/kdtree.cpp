@@ -1,8 +1,9 @@
 //
-// KdTree implementation.
+// Kd-Tree implementation.
 //
 // Copyright: Christoph Dalitz, 2018
 //            Jens Wilberg, 2018
+// Version:   1.2
 // License:   BSD style license
 //            (see the file LICENSE for details)
 //
@@ -178,6 +179,9 @@ KdTree::KdTree(const KdNodeVector* nodes, int distance_type /*=2*/) {
   size_t i, j;
   double val;
   // copy over input data
+  if (!nodes || nodes->empty())
+    throw std::invalid_argument(
+        "kdtree::KdTree(): argument nodes must not be empty");
   dimension = nodes->begin()->point.size();
   allnodes = *nodes;
   // initialize distance values
@@ -254,18 +258,15 @@ kdtree_node* KdTree::build_tree(size_t depth, size_t a, size_t b) {
 // k nearest neighbor search
 // returns the *k* nearest neighbors of *point* in O(log(n))
 // time. The result is returned in *result* and is sorted by
-// distance from *point*. Also the distances from *point* are
-// returned in *distances*.
+// distance from *point*.
 // The optional search predicate is a callable class (aka "functor")
 // derived from KdNodePredicate. When Null (default, no search
 // predicate is applied).
 //--------------------------------------------------------------
 void KdTree::k_nearest_neighbors(const CoordPoint& point, size_t k,
                                  KdNodeVector* result,
-                                 std::vector<double>* distances,
                                  KdNodePredicate* pred /*=NULL*/) {
   size_t i;
-  double d, temp_dist;
   KdNode temp;
   searchpredicate = pred;
 
@@ -277,8 +278,9 @@ void KdTree::k_nearest_neighbors(const CoordPoint& point, size_t k,
         "kdtree");
 
   // collect result of k values in neighborheap
-  neighborheap =
-      new std::priority_queue<nn4heap, std::vector<nn4heap>, compare_nn4heap>();
+  //std::priority_queue<nn4heap, std::vector<nn4heap>, compare_nn4heap>*
+  //neighborheap = new std::priority_queue<nn4heap, std::vector<nn4heap>, compare_nn4heap>();
+  SearchQueue* neighborheap = new SearchQueue();
   if (k > allnodes.size()) {
     // when more neighbors asked than nodes in tree, return everything
     k = allnodes.size();
@@ -288,17 +290,15 @@ void KdTree::k_nearest_neighbors(const CoordPoint& point, size_t k,
             nn4heap(i, distance->distance(allnodes[i].point, point)));
     }
   } else {
-    neighbor_search(point, root, k);
+    neighbor_search(point, root, k, neighborheap);
   }
 
   // copy over result sorted by distance
   // (we must revert the vector for ascending order)
   while (!neighborheap->empty()) {
     i = neighborheap->top().dataindex;
-    d = neighborheap->top().distance;
     neighborheap->pop();
     result->push_back(allnodes[i]);
-    distances->push_back(d);
   }
   // beware that less than k results might have been returned
   k = result->size();
@@ -306,9 +306,6 @@ void KdTree::k_nearest_neighbors(const CoordPoint& point, size_t k,
     temp = (*result)[i];
     (*result)[i] = (*result)[k - 1 - i];
     (*result)[k - 1 - i] = temp;
-    temp_dist = (*distances)[i];
-    (*distances)[i] = (*distances)[k - 1 - i];
-    (*distances)[k - 1 - i] = temp_dist;
   }
   delete neighborheap;
 }
@@ -321,7 +318,6 @@ void KdTree::k_nearest_neighbors(const CoordPoint& point, size_t k,
 //--------------------------------------------------------------
 void KdTree::range_nearest_neighbors(const CoordPoint& point, double r,
                                      KdNodeVector* result) {
-  size_t i, k;
   KdNode temp;
 
   result->clear();
@@ -331,12 +327,13 @@ void KdTree::range_nearest_neighbors(const CoordPoint& point, double r,
         "kdtree");
   if (this->distance_type == 2) {
     // if euclidien distance is used the range must be squared because we
-    // get squred distances from this implementation
+    // get squared distances from this implementation
     r *= r;
   }
 
-  // collect result in neighborheap
-  range_search(point, root, r);
+  // collect result in range_result
+  std::vector<size_t> range_result;
+  range_search(point, root, r, &range_result);
 
   // copy over result
   for (std::vector<size_t>::iterator i = range_result.begin();
@@ -350,11 +347,11 @@ void KdTree::range_nearest_neighbors(const CoordPoint& point, double r,
 
 //--------------------------------------------------------------
 // recursive function for nearest neighbor search in subtree
-// under *node*. Updates the heap (class member) *neighborheap*.
+// under *node*. Stores result in *neighborheap*.
 // returns "true" when no nearer neighbor elsewhere possible
 //--------------------------------------------------------------
 bool KdTree::neighbor_search(const CoordPoint& point, kdtree_node* node,
-                             size_t k) {
+                             size_t k, SearchQueue* neighborheap) {
   double curdist, dist;
 
   curdist = distance->distance(point, node->point);
@@ -369,10 +366,10 @@ bool KdTree::neighbor_search(const CoordPoint& point, kdtree_node* node,
   // first search on side closer to point
   if (point[node->cutdim] < node->point[node->cutdim]) {
     if (node->loson)
-      if (neighbor_search(point, node->loson, k)) return true;
+      if (neighbor_search(point, node->loson, k, neighborheap)) return true;
   } else {
     if (node->hison)
-      if (neighbor_search(point, node->hison, k)) return true;
+      if (neighbor_search(point, node->hison, k, neighborheap)) return true;
   }
   // second search on farther side, if necessary
   if (neighborheap->size() < k) {
@@ -382,10 +379,10 @@ bool KdTree::neighbor_search(const CoordPoint& point, kdtree_node* node,
   }
   if (point[node->cutdim] < node->point[node->cutdim]) {
     if (node->hison && bounds_overlap_ball(point, dist, node->hison))
-      if (neighbor_search(point, node->hison, k)) return true;
+      if (neighbor_search(point, node->hison, k, neighborheap)) return true;
   } else {
     if (node->loson && bounds_overlap_ball(point, dist, node->loson))
-      if (neighbor_search(point, node->loson, k)) return true;
+      if (neighbor_search(point, node->loson, k, neighborheap)) return true;
   }
 
   if (neighborheap->size() == k) dist = neighborheap->top().distance;
@@ -394,19 +391,19 @@ bool KdTree::neighbor_search(const CoordPoint& point, kdtree_node* node,
 
 //--------------------------------------------------------------
 // recursive function for range search in subtree under *node*.
-// Updates the heap (class member) *neighborheap*.
+// Stores result in *range_result*.
 //--------------------------------------------------------------
 void KdTree::range_search(const CoordPoint& point, kdtree_node* node,
-                          double r) {
+                          double r, std::vector<size_t>* range_result) {
   double curdist = distance->distance(point, node->point);
   if (curdist <= r) {
-    range_result.push_back(node->dataindex);
+    range_result->push_back(node->dataindex);
   }
   if (node->loson != NULL && this->bounds_overlap_ball(point, r, node->loson)) {
-    range_search(point, node->loson, r);
+    range_search(point, node->loson, r, range_result);
   }
   if (node->hison != NULL && this->bounds_overlap_ball(point, r, node->hison)) {
-    range_search(point, node->hison, r);
+    range_search(point, node->hison, r, range_result);
   }
 }
 
