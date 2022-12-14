@@ -265,8 +265,10 @@ kdtree_node* KdTree::build_tree(size_t depth, size_t a, size_t b) {
 //--------------------------------------------------------------
 void KdTree::k_nearest_neighbors(const CoordPoint& point, size_t k,
                                  KdNodeVector* result,
+                                 std::vector<double>* distances,
                                  KdNodePredicate* pred /*=NULL*/) {
   size_t i;
+  double d, temp_dist;
   KdNode temp;
   searchpredicate = pred;
 
@@ -297,8 +299,10 @@ void KdTree::k_nearest_neighbors(const CoordPoint& point, size_t k,
   // (we must revert the vector for ascending order)
   while (!neighborheap->empty()) {
     i = neighborheap->top().dataindex;
+    d = neighborheap->top().distance;
     neighborheap->pop();
     result->push_back(allnodes[i]);
+    distances->push_back(d);
   }
   // beware that less than k results might have been returned
   k = result->size();
@@ -306,6 +310,9 @@ void KdTree::k_nearest_neighbors(const CoordPoint& point, size_t k,
     temp = (*result)[i];
     (*result)[i] = (*result)[k - 1 - i];
     (*result)[k - 1 - i] = temp;
+    temp_dist = (*distances)[i];
+    (*distances)[i] = (*distances)[k - 1 - i];
+    (*distances)[k - 1 - i] = temp_dist;
   }
   delete neighborheap;
 }

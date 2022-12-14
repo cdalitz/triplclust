@@ -98,7 +98,9 @@ class KdTree {
   ~KdTree();
   void set_distance(int distance_type, const DoubleVector* weights = NULL);
   void k_nearest_neighbors(const CoordPoint& point, size_t k,
-                           KdNodeVector* result, KdNodePredicate* pred = NULL);
+                           KdNodeVector* result,
+                           std::vector<double>* distances,
+                           KdNodePredicate* pred = NULL);
   void range_nearest_neighbors(const CoordPoint& point, double r,
                                KdNodeVector* result);
 };

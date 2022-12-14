@@ -125,7 +125,6 @@ void max_step(std::vector<std::vector<size_t> > &new_clusters,
               const std::vector<size_t> &cluster, const PointCloud &cloud,
               double dmax, size_t min_size) {
   size_t vcount = cluster.size();
-  double tstart;
   std::vector<std::vector<size_t> > adj(vcount);
   std::vector<Edge> edges, mst_edges;
   std::vector<bool> visited(vcount);
