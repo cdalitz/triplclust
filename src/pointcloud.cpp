@@ -193,7 +193,7 @@ void load_csv_file(const char *fname, PointCloud &cloud, const char delimiter,
       column++;
       point.z = stod(items[2].c_str());
       cloud.push_back(point);
-    } catch (std::invalid_argument e) {
+    } catch (const std::invalid_argument &e) {
       std::ostringstream oss;
       oss << "row " << count + skiped << " column " << column << ": "
           << e.what();

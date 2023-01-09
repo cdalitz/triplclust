@@ -188,7 +188,7 @@ int Opt::parse_args(int argc, char** argv) {
         this->infile_name = argv[i];
       }
     }
-  } catch (std::invalid_argument e) {
+  } catch (const std::invalid_argument &e) {
     std::cerr << e.what() << std::endl;
     return 1;
   }
