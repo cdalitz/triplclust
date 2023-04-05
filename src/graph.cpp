@@ -118,26 +118,30 @@ void dfs_util(std::vector<size_t> &new_cluster, const size_t vertex,
 //-------------------------------------------------------------------
 // Split *cluster* in multiple new clusters and return the result in
 // *new_clusters". The mst of the cluster is created and all edges are
-// removed with a wheigth > *dmax*. The connected comonents are computed
+// removed with a wheigth > *dmax*. The connected components are computed
 // and returned as new clusters if their size is >= *min_size*.
 //-------------------------------------------------------------------
 void max_step(std::vector<std::vector<size_t> > &new_clusters,
               const std::vector<size_t> &cluster, const PointCloud &cloud,
               double dmax, size_t min_size) {
   size_t vcount = cluster.size();
+  size_t n_removed;
   std::vector<std::vector<size_t> > adj(vcount);
   std::vector<Edge> edges, mst_edges;
   std::vector<bool> visited(vcount);
   create_edges(edges, cloud, cluster);
   mst(edges, mst_edges, vcount);
+  n_removed = mst_edges.size();
   remove_edge(mst_edges, dmax);
+  n_removed = n_removed - mst_edges.size();
   create_adj(adj, mst_edges);
 
   for (size_t v = 0; v < vcount; ++v) {
     if (!visited[v]) {
       std::vector<size_t> new_cluster;
       dfs_util(new_cluster, v, visited, cluster, adj);
-      new_clusters.push_back(new_cluster);
+      if ((new_cluster.size() >= min_size) || (n_removed == 0))
+        new_clusters.push_back(new_cluster);
     }
   }
 }
