@@ -40,6 +40,8 @@ const char *usage =
     "\t               (can be numeric, multiple of dNN or 'none')\n"
     "\t-link <method> linkage method for clustering [single]\n"
     "\t               (can be 'single', 'complete', 'average')\n"
+    "\t-isOrdered     interpret infile as ordered\n"
+    "\t               (i.e. file has to be in chronological order)\n"
     "\t-oprefix <prefix>\n"
     "\t               write result not to stdout, but to <prefix>.csv\n"
     "\t               and (if -gnuplot is set) to <prefix>.gnuplot\n"
@@ -61,6 +63,7 @@ int main(int argc, char **argv) {
   const char *infile_name = opt_params.get_ifname();
   const char *outfile_prefix = opt_params.get_ofprefix();
   int opt_verbose = opt_params.get_verbosity();
+  bool isOrdered = opt_params.get_isOrdered();
 
   // plausibility checks
   if (!infile_name) {
@@ -70,6 +73,8 @@ int main(int argc, char **argv) {
 
   // load data
   PointCloud cloud_xyz;
+  cloud_xyz.setOrdered(isOrdered);
+  
   try {
     load_csv_file(infile_name, cloud_xyz, opt_params.get_delimiter(),
                   opt_params.get_skip());

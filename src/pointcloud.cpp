@@ -53,6 +53,14 @@ Point::Point(double x, double y, double z,
   this->cluster_ids = cluster_ids;
 }
 
+Point::Point(double x, double y, double z, size_t index) {         //!
+  this->x = x;                                                     //!
+  this->y = y;                                                     //!
+  this->z = z;                                                     //!
+  this->index = index;                                             //!
+}
+
+
 // representation of 3D point as std::vector.
 std::vector<double> Point::as_vector() const {
   std::vector<double> point(3);
@@ -126,6 +134,12 @@ void PointCloud::set2d(bool is2d) { this->points2d = is2d; }
 
 bool PointCloud::is2d() const { return this->points2d; }
 
+
+void PointCloud::setOrdered(bool isOrdered) {this->ordered=isOrdered;} // !
+ 
+bool PointCloud::isOrdered() const { return this->ordered; } // !
+
+
 // Split string *input* into substrings by *delimiter*. The result is
 // returned in *result*
 void split(const std::string &input, std::vector<std::string> &result,
@@ -152,6 +166,7 @@ void load_csv_file(const char *fname, PointCloud &cloud, const char delimiter,
   std::string line;
   std::vector<std::string> items;
   size_t count = 0, count2d = 0, skiped = 0, countpoints = 0;
+  size_t countOrdered = 0; //!
   if (infile.fail()) throw std::exception();
   for (size_t i = 0; i < skip; ++i) {
     // skip the header
@@ -192,6 +207,7 @@ void load_csv_file(const char *fname, PointCloud &cloud, const char delimiter,
       point.y = stod(items[1].c_str());
       column++;
       point.z = stod(items[2].c_str());
+      point.index = countpoints-1;            //!
       cloud.push_back(point);
     } catch (const std::invalid_argument &e) {
       std::ostringstream oss;
@@ -199,6 +215,7 @@ void load_csv_file(const char *fname, PointCloud &cloud, const char delimiter,
           << e.what();
       throw std::invalid_argument(oss.str());
     }
+
     items.clear();
   }
 
@@ -263,6 +280,8 @@ void smoothen_cloud(const PointCloud &cloud, PointCloud &result_cloud,
     new_point.z =
         std::accumulate(z_list.begin(), z_list.end(), 0.0) / result_size;
 
+    new_point.index = point.index;               //!
     result_cloud.push_back(new_point);
   }
+  result_cloud.setOrdered(cloud.isOrdered());    //!
 }

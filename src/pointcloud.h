@@ -23,12 +23,14 @@ class Point {
   double y;
   double z;
   std::set<size_t> cluster_ids;
+  size_t index;                      //!
 
   Point(){};
   Point(const std::vector<double>& point);
   Point(const std::vector<double>& point, const std::set<size_t>& cluster_ids);
   Point(double x, double y, double z);
   Point(double x, double y, double z, const std::set<size_t>& cluster_ids);
+  Point(double x, double y, double z, size_t index); //!
 
   // representation of 3D point as std::vector
   std::vector<double> as_vector() const;
@@ -58,12 +60,16 @@ Point operator*(double c, Point x);
 class PointCloud : public std::vector<Point> {
  private:
   bool points2d;
+  bool ordered;   //!
 
  public:
   bool is2d() const;
   void set2d(bool is2d);
+  bool isOrdered() const;   //!
+  void setOrdered(bool isOrdered);  //!
   PointCloud();
 };
+
 
 // Load csv file.
 void load_csv_file(const char* fname, PointCloud& cloud, const char delimiter,

@@ -53,6 +53,7 @@ Opt::Opt() {
 int Opt::parse_args(int argc, char** argv) {
   // parse command line
   std::pair<double, bool> tmp;
+  this->isOrdered = false;
   try {
     for (int i = 1; i < argc; i++) {
       if (0 == strcmp(argv[i], "-v")) {
@@ -82,6 +83,8 @@ int Opt::parse_args(int argc, char** argv) {
         } else {
           return 1;
         }
+      } else if (0 == strcmp(argv[i], "-isOrdered")) {      //!
+        this->isOrdered = true;                             //!
       } else if (0 == strcmp(argv[i], "-n")) {
         ++i;
         if (i < argc) {
@@ -260,3 +263,4 @@ bool Opt::is_dmax() { return this->isdmax; }
 double Opt::get_dmax() { return this->dmax; }
 Linkage Opt::get_linkage() { return this->link; }
 size_t Opt::get_m() { return this->m; }
+bool Opt::get_isOrdered() {return this->isOrdered;}    //!
