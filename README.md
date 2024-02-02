@@ -46,8 +46,8 @@ is the space character, but a different character can be specified with the
 command line option "-delim <char>". Lines starting with a hash (#) are
 ignored. 
 
-With the -isOrdered option, the input file is treated as ordered, i.e. the 
-points have to be in chronological order. 
+If the points are in chronological order, the option "-ordered" improves
+track detection, because some impossible triplet combinations are ruled out.
 
 Unless the option "-oprefix <prefix>" is given, the output is printed to
 stdout. The default output format is a comma separated file with two header
@@ -132,7 +132,8 @@ in the IPOL paper.
 Authors & Copyright
 -------------------
 
-Jens Wilberg, Christoph Dalitz, Lukas Aymans, 2017-2018  
+Christoph Dalitz, 2017-2024
+Jens Wilberg, Lukas Aymans, 2017-2018  
 Institute for Pattern Recognition  
 Niederrhein University of Applied Sciences  
 Krefeld, Germany

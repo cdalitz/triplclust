@@ -1,16 +1,8 @@
 Change log of triplclust
 =========================
 
-Version 1.5 from 2024-01-15
----------------------------
-
- - added option -isOrdered 
- 
- - implemented searching trajectories in an ordered cloud 
- (thanks to Juliane Arning)
-
-Version 1.4 from ?
----------------------------
+ - new option -ordered for point clouds that are in chronological order,
+   which can improve trajctory detection (thanks to Juliane Arning)
 
  - step 3) of the pruning method described at the end of section 2.4
    in the IPOL article was missing and has now been added

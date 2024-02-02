@@ -4,7 +4,7 @@
 //     computing their dissimilarity.
 //
 // Author:  Jens Wilberg, Lukas Aymans, Christoph Dalitz
-// Date:    2018-08-30
+// Date:    2024-02-02
 // License: see ../LICENSE
 //
 
@@ -21,12 +21,13 @@
 // of neighbores from a point, which are used for triplet generation.
 // *n* is the number of the best triplet candidates to use. This can
 // be lesser than *n*. *a* is the max error (1-angle) for the triplet
-// to be a triplet candidate.
-// If the cloud is ordered, all triplets generated follow a.index < b.index < c.index. 
+// to be a triplet candidate. If the cloud is ordered, only triplets
+// with a.index < b.index < c.index are considered.
 //-------------------------------------------------------------------
-void generate_triplets(const PointCloud &cloud, std::vector<triplet> &triplets, size_t k, size_t n, double a) {
+void generate_triplets(const PointCloud &cloud, std::vector<triplet> &triplets,
+                       size_t k, size_t n, double a) {
   std::vector<double> distances;
-  Kdtree::KdNodeVector nodes,result;
+  Kdtree::KdNodeVector nodes, result;
   std::vector<size_t> indices;  // save the indices so that they can be used
                                 // for the KdNode constructor
   indices.resize(cloud.size(), 0);
@@ -46,7 +47,7 @@ void generate_triplets(const PointCloud &cloud, std::vector<triplet> &triplets, 
     Point point_b = cloud[point_index_b];
     std::vector<triplet> triplet_candidates;
     kdtree.k_nearest_neighbors(cloud[point_index_b].as_vector(), k, &result,
-                             &distances);
+                               &distances);
 
     for (size_t result_index_a = 1; result_index_a < result.size();
          ++result_index_a) {
@@ -54,7 +55,7 @@ void generate_triplets(const PointCloud &cloud, std::vector<triplet> &triplets, 
       if (distances[result_index_a] == 0) continue;
       Point point_a(result[result_index_a].point);
       point_a.index = result[result_index_a].index;
-      if (cloud.isOrdered() && (point_a.index>point_b.index)) continue;    //!
+      if (cloud.isOrdered() && (point_a.index > point_b.index)) continue;
       size_t point_index_a = *(size_t *)result[result_index_a].data;
 
       Point direction_ab = point_b - point_a;
@@ -67,7 +68,7 @@ void generate_triplets(const PointCloud &cloud, std::vector<triplet> &triplets, 
         if (distances[result_index_c] == 0) continue;
         Point point_c = Point(result[result_index_c].point);
         point_c.index = result[result_index_c].index;
-        if (cloud.isOrdered() && (point_b.index>point_c.index)) continue;    //!
+        if (cloud.isOrdered() && (point_b.index > point_c.index)) continue;
         size_t point_index_c = *(size_t *)result[result_index_c].data;   
 
         Point direction_bc = point_c - point_b;

@@ -3,7 +3,7 @@
 //     Class and functions for parsing and storing command line options.
 //
 // Author:  Jens Wilberg, Lukas Aymans, Christoph Dalitz
-// Date:    2018-08-30
+// Date:    2024-02-02
 // License: see ../LICENSE
 //
 
@@ -40,6 +40,7 @@ Opt::Opt() {
   this->dmax = 0.0;
   this->isdmax = false;
   this->dmax_dnn = false;
+  this->ordered = false;
   this->link = SINGLE;
 
   this->m = 5;
@@ -53,7 +54,6 @@ Opt::Opt() {
 int Opt::parse_args(int argc, char** argv) {
   // parse command line
   std::pair<double, bool> tmp;
-  this->isOrdered = false;
   try {
     for (int i = 1; i < argc; i++) {
       if (0 == strcmp(argv[i], "-v")) {
@@ -83,8 +83,8 @@ int Opt::parse_args(int argc, char** argv) {
         } else {
           return 1;
         }
-      } else if (0 == strcmp(argv[i], "-isOrdered")) {      //!
-        this->isOrdered = true;                             //!
+      } else if (0 == strcmp(argv[i], "-ordered")) {
+        this->ordered = true;
       } else if (0 == strcmp(argv[i], "-n")) {
         ++i;
         if (i < argc) {
@@ -263,4 +263,4 @@ bool Opt::is_dmax() { return this->isdmax; }
 double Opt::get_dmax() { return this->dmax; }
 Linkage Opt::get_linkage() { return this->link; }
 size_t Opt::get_m() { return this->m; }
-bool Opt::get_isOrdered() {return this->isOrdered;}    //!
+bool Opt::get_ordered() {return this->ordered;}

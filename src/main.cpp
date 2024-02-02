@@ -3,7 +3,7 @@
 //     Main file for reference implementation of the TriplClust algorithm.
 //
 // Author:  Jens Wilberg, Lukas Aymans, Christoph Dalitz
-// Date:    2019-04-02
+// Date:    2024-02-02
 // License: see ../LICENSE
 //
 
@@ -40,8 +40,8 @@ const char *usage =
     "\t               (can be numeric, multiple of dNN or 'none')\n"
     "\t-link <method> linkage method for clustering [single]\n"
     "\t               (can be 'single', 'complete', 'average')\n"
-    "\t-isOrdered     interpret infile as ordered\n"
-    "\t               (i.e. file has to be in chronological order)\n"
+    "\t-ordered       interpret infile as ordered\n"
+    "\t               (i.e. points are in chronological order)\n"
     "\t-oprefix <prefix>\n"
     "\t               write result not to stdout, but to <prefix>.csv\n"
     "\t               and (if -gnuplot is set) to <prefix>.gnuplot\n"
@@ -51,7 +51,7 @@ const char *usage =
     "\t-v             be verbose\n"
     "\t-vv            be more verbose and write debug trace files\n"
     "Version:\n"
-    "\t1.3 from 2019-04-02";
+    "\t1.4a from 2024-02-02";
 
 int main(int argc, char **argv) {
   // parse commandline
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
   const char *infile_name = opt_params.get_ifname();
   const char *outfile_prefix = opt_params.get_ofprefix();
   int opt_verbose = opt_params.get_verbosity();
-  bool isOrdered = opt_params.get_isOrdered();
+  bool opt_ordered = opt_params.get_ordered();
 
   // plausibility checks
   if (!infile_name) {
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
 
   // load data
   PointCloud cloud_xyz;
-  cloud_xyz.setOrdered(isOrdered);
+  cloud_xyz.setOrdered(opt_ordered);
   
   try {
     load_csv_file(infile_name, cloud_xyz, opt_params.get_delimiter(),

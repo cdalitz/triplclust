@@ -3,7 +3,7 @@
 //     Class and functions for parsing and storing command line options.
 //
 // Author:  Jens Wilberg, Lukas Aymans, Christoph Dalitz
-// Date:    2018-08-30
+// Date:    2024-02-02
 // License: see ../LICENSE
 //
 
@@ -48,7 +48,7 @@ class Opt {
   double dmax;
   bool isdmax;    // dmax != none
   bool dmax_dnn;  // use dnn for dmax
-  bool isOrdered=false;                         //!
+  bool ordered;   // points are in chronological order
   // linkage method for clustering
   Linkage link;
 
@@ -81,7 +81,7 @@ class Opt {
   double get_t();
   bool is_dmax();
   double get_dmax();
-  bool get_isOrdered();   //!
+  bool get_ordered();   //!
   Linkage get_linkage();
   size_t get_m();
 };

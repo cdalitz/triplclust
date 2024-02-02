@@ -3,7 +3,7 @@
 //     Classes and functions for 3D points and clouds thereof.
 //
 // Author:  Jens Wilberg, Lukas Aymans, Christoph Dalitz
-// Date:    2018-08-30
+// Date:    2024-02-02
 // License: see ../LICENSE
 //
 
@@ -23,14 +23,14 @@ class Point {
   double y;
   double z;
   std::set<size_t> cluster_ids;
-  size_t index;                      //!
+  size_t index;    // only used for chronological order
 
   Point(){};
   Point(const std::vector<double>& point);
   Point(const std::vector<double>& point, const std::set<size_t>& cluster_ids);
   Point(double x, double y, double z);
   Point(double x, double y, double z, const std::set<size_t>& cluster_ids);
-  Point(double x, double y, double z, size_t index); //!
+  Point(double x, double y, double z, size_t index);
 
   // representation of 3D point as std::vector
   std::vector<double> as_vector() const;
