@@ -46,6 +46,9 @@ is the space character, but a different character can be specified with the
 command line option "-delim <char>". Lines starting with a hash (#) are
 ignored. 
 
+With the -isOrdered option, the input file is treated as ordered, i.e. the 
+points have to be in chronological order. 
+
 Unless the option "-oprefix <prefix>" is given, the output is printed to
 stdout. The default output format is a comma separated file with two header
 lines (starting with #) and one point per line followed by the cluster label.

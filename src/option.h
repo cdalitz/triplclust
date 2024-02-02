@@ -48,6 +48,7 @@ class Opt {
   double dmax;
   bool isdmax;    // dmax != none
   bool dmax_dnn;  // use dnn for dmax
+  bool isOrdered=false;                         //!
   // linkage method for clustering
   Linkage link;
 
@@ -80,6 +81,7 @@ class Opt {
   double get_t();
   bool is_dmax();
   double get_dmax();
+  bool get_isOrdered();   //!
   Linkage get_linkage();
   size_t get_m();
 };
