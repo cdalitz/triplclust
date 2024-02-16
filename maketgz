@@ -34,7 +34,7 @@ DIR=triplclust-$VERSION
 ln -s . $DIR
 
 tar czvf $DIR.tgz \
-    $DIR/README.txt $DIR/CMakeLists.txt $DIR/CHANGES $DIR/LICENSE \
+    $DIR/README.md $DIR/CMakeLists.txt $DIR/CHANGES $DIR/LICENSE \
 	$DIR/test.dat $DIR/cdist-plot.r $DIR/src $DIR/data
 
 # clean up
