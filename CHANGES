@@ -1,6 +1,9 @@
 Change log of triplclust
 =========================
 
+Version 1.4 from 2024-02-16
+---------------------------
+
  - new option -ordered for point clouds that are in chronological order,
    which can improve trajctory detection (thanks to Juliane Arning)
 

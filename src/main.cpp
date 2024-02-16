@@ -3,7 +3,7 @@
 //     Main file for reference implementation of the TriplClust algorithm.
 //
 // Author:  Jens Wilberg, Lukas Aymans, Christoph Dalitz
-// Date:    2024-02-02
+// Date:    2024-02-16
 // License: see ../LICENSE
 //
 
@@ -51,7 +51,7 @@ const char *usage =
     "\t-v             be verbose\n"
     "\t-vv            be more verbose and write debug trace files\n"
     "Version:\n"
-    "\t1.4a from 2024-02-02";
+    "\t1.4 from 2024-02-16";
 
 int main(int argc, char **argv) {
   // parse commandline
