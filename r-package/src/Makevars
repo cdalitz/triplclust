@@ -1,0 +1,2 @@
+PKG_CPPFLAGS = -I./hclust -I./kdtree
+CXXFLAGS = $(filter-out -mno-omit-leaf-frame-pointer,$(CXXFLAGS))

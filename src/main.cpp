@@ -11,14 +11,12 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
-#include <vector>
-
 #include "cluster.h"
 #include "dnn.h"
-#include "graph.h"
 #include "option.h"
 #include "output.h"
 #include "pointcloud.h"
+#include "triplclust.h"
 
 // usage message
 const char *usage =
@@ -118,44 +116,20 @@ int main(int argc, char **argv) {
     }
   }
 
-  // Step 1) smoothing by position averaging of neighboring points
-  PointCloud cloud_xyz_smooth;
-  smoothen_cloud(cloud_xyz, cloud_xyz_smooth, opt_params.get_r());
-
-  if (opt_verbose > 1) {
-    bool rc;
-    rc = cloud_to_csv(cloud_xyz_smooth);
-    if (!rc)
-      std::cerr << "[Error] can't write debug_smoothed.csv" << std::endl;
-    rc = debug_gnuplot(cloud_xyz, cloud_xyz_smooth);
-    if (!rc)
-      std::cerr << "[Error] can't write debug_smoothed.gnuplot" << std::endl;
-  }
-
-  // Step 2) finding triplets of approximately collinear points
-  std::vector<triplet> triplets;
-  generate_triplets(cloud_xyz_smooth, triplets, opt_params.get_k(),
-                    opt_params.get_n(), opt_params.get_a());
-
-  // Step 3) single link hierarchical clustering of the triplets
-  cluster_group cl_group;
-  compute_hc(cloud_xyz_smooth, cl_group, triplets, opt_params.get_s(),
-             opt_params.get_t(), opt_params.is_tauto(), opt_params.get_dmax(),
-             opt_params.is_dmax(), opt_params.get_linkage(), opt_verbose);
-
-  // Step 4) pruning by removal of small clusters ...
-  cleanup_cluster_group(cl_group, opt_params.get_m(), opt_verbose);
-  cluster_triplets_to_points(triplets, cl_group);
-  // .. and (optionally) by splitting up clusters at gaps > dmax
-  if (opt_params.is_dmax()) {
-    cluster_group cleaned_up_cluster_group;
-    for (cluster_group::iterator cl = cl_group.begin(); cl != cl_group.end();
-         ++cl) {
-      max_step(cleaned_up_cluster_group, *cl, cloud_xyz, opt_params.get_dmax(),
-               opt_params.get_m() + 2);
-    }
-    cl_group = cleaned_up_cluster_group;
-  }
+  TriplClustParameters parameters;
+  parameters.r = opt_params.get_r();
+  parameters.k = opt_params.get_k();
+  parameters.n = opt_params.get_n();
+  parameters.a = opt_params.get_a();
+  parameters.s = opt_params.get_s();
+  parameters.t = opt_params.get_t();
+  parameters.tauto = opt_params.is_tauto();
+  parameters.dmax = opt_params.get_dmax();
+  parameters.is_dmax = opt_params.is_dmax();
+  parameters.linkage = opt_params.get_linkage();
+  parameters.m = opt_params.get_m();
+  parameters.verbose = opt_verbose;
+  cluster_group cl_group = triplclust(cloud_xyz, parameters);
 
   // store cluster labels in points
   add_clusters(cloud_xyz, cl_group, opt_params.is_gnuplot());

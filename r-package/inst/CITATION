@@ -1,0 +1,12 @@
+citHeader("To cite the 'triplclustR' package in publications use:")
+bibentry(bibtype = "article",
+    title = "TriplClust: An Algorithm for Curve Detection in 3D Point Clouds",
+    author = c(person("Christoph", "Dalitz"), person("Jens", "Wilberg"), person("Lukas", "Aymans")),
+    year = "2019",
+    journal = "Image Processing Online",
+    doi = "10.5201/ipol.2019.234",
+    volume = "9",
+    issn = "2105-1232",
+    pages = "26-46",
+    note = "https://github.com/cdalitz/triplclust/"
+    )

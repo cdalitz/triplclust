@@ -33,7 +33,7 @@ Opt::Opt() {
   this->a = 0.03;
 
   // triplet clustering
-  this->s = 0.3;
+  this->s = 0.33;
   this->sdnn = true;
   this->t = 0;
   this->tauto = true;

@@ -1,0 +1,22 @@
+Package: triplclustR
+Type: Package
+Title: R Interface to the TriplClust Algorithm
+Version: 1.0.0
+Date: 2026-10-05
+Authors@R: c(
+		person("Christoph", "Dalitz", email="christoph.dalitz@hs-niederrhein.de", role = c("aut", "cre")),
+		person("Jens", "Wilberg", role = c("aut", "cph"), email = NA),
+		person("Lukas", "Aymans", role = c("aut", "cph"), email = NA),
+		person("Daniel", "Müllner", role = c("aut", "cph"), email = NA),
+		person("Vitali", "Krieger", role = c("aut"), email = NA)
+	)
+Maintainer: Christoph Dalitz <christoph.dalitz@hs-niederrhein.de>
+Description: TriplClust assigns each point in a 3D or 2D point cloud a cluster label representing curves or noise. It can be used to detect curves in point clouds. The algorithm is explained in Dalitz et al. (2019) <doi:10.5201/ipol.2019.234>.
+Depends: R (>= 3.5.0)
+License: BSD 2-clause License + file LICENSE
+URL: https://github.com/cdalitz/triplclust/
+Imports: Rcpp (>= 1.0.0)
+LinkingTo: Rcpp
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 7.0.0
