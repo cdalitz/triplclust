@@ -7,7 +7,7 @@
 #'   with zero-based cluster IDs, `-1` for noise, and `-2` for overlaps.
 #' @export
 prepare_csv <- function(points, labels) {
-  if (!is.matrix(points) || !is.numeric(points) || ncol(points) != 3L) {
+  if (!is.matrix(points) | !is.numeric(points) | ncol(points) != 3L) {
     stop(
       "points must be a numeric matrix with exactly three columns",
       call. = FALSE
@@ -47,7 +47,7 @@ prepare_csv <- function(points, labels) {
 #' @return A character string containing a gnuplot script.
 #' @export
 prepare_plot <- function(points, labels) {
-  if (!is.matrix(points) || !is.numeric(points) || ncol(points) != 3L) {
+  if (!is.matrix(points) | !is.numeric(points) | ncol(points) != 3L) {
     stop(
       "points must be a numeric matrix with exactly three columns",
       call. = FALSE
@@ -147,7 +147,7 @@ prepare_plot <- function(points, labels) {
     return(cluster_list)
   }
 
-  if (is.numeric(labels) || is.integer(labels) || is.character(labels)) {
+  if (is.numeric(labels) | is.integer(labels) | is.character(labels)) {
     labels <- as.integer(labels)
     if (length(labels) != nrow(points)) {
       stop("labels must have one value per point", call. = FALSE)
