@@ -1,7 +1,4 @@
 #' @title triplclustR – R interface to the TriplClust algorithm
-#' @description
-#' An implementation of the the TriplClust algorithm for detecting
-#' and separating curves in 3D point clouds.
 #' @name triplclustR
 #' @docType package
 #' @keywords internal

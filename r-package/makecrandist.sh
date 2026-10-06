@@ -11,10 +11,11 @@
 # -------------------------------------------------------------
 set -euo pipefail
 
+SRCDIR=../src                     # where the C++ source of triplclust are
 OLDDIR="$(pwd)"
 WORK="$(mktemp -d)"
-trap 'rm -rf "${WORK}"' EXIT                            # always clean up
-PKG="${WORK}/triplclustR"                                # temporary package
+trap 'rm -rf "${WORK}"' EXIT      # clean up tmpdir after sript ends
+PKG="${WORK}/triplclustR"         # temporary package
 
 # ---------- Step 1: copy the R package ----------
 mkdir -p "${PKG}"
@@ -23,13 +24,12 @@ cp -a * "${PKG}"
 
 # ---------- Step 2: license ----------
 # lic_cran (CRAN's short format) becomes the package LICENSE.
-# mkdir -p inst
-# cp LICENSE inst/COPYRIGHTS
-# mv lic_cran LICENSE
+#cp LICENSE  "${PKG}"/inst/COPYRIGHTS
+mv "${PKG}"/lic_cran "${PKG}"/LICENSE
 
 # ---------- Step 3: copy the C++ sources ----------
-cp -r ../src/hclust ../src/kdtree "${PKG}"/src/
-cp ../src/*.cpp ../src/*.h "${PKG}"/src/
+cp -r ${SRCDIR}/hclust ${SRCDIR}/kdtree "${PKG}"/src/
+cp ${SRCDIR}/*.cpp ${SRCDIR}/*.h "${PKG}"/src/
 
 
 # These two are only needed for the standalone binary

@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include "cluster.h"
 #include "pointcloud.h"
 #include "triplclust.h"
 
@@ -35,14 +36,19 @@ Rcpp::List triplclust_rcpp(
   params.m = m;
   params.verbose = verbose;
 
-  const cluster_group result = triplclust(cloud, params);
-  Rcpp::List clusters(result.size());
-  for (size_t cluster = 0; cluster < result.size(); ++cluster) {
-    Rcpp::IntegerVector indices(result[cluster].size());
-    for (size_t index = 0; index < result[cluster].size(); ++index) {
-      indices[index] = static_cast<int>(result[cluster][index]) + 1;
+  cluster_group cl_group = triplclust(cloud, params);
+  add_clusters(cloud, cl_group, false);
+
+  Rcpp::List point_clusters(cloud.size());
+  for (size_t point = 0; point < cloud.size(); ++point) {
+    Rcpp::IntegerVector cluster_ids(cloud[point].cluster_ids.size());
+    size_t index = 0;
+    for (std::set<size_t>::const_iterator cluster =
+             cloud[point].cluster_ids.begin();
+         cluster != cloud[point].cluster_ids.end(); ++cluster) {
+      cluster_ids[index++] = static_cast<int>(*cluster) + 1;
     }
-    clusters[cluster] = indices;
+    point_clusters[point] = cluster_ids;
   }
-  return clusters;
+  return point_clusters;
 }

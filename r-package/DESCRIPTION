@@ -15,6 +15,7 @@ Description: TriplClust assigns each point in a 3D or 2D point cloud a cluster l
 Depends: R (>= 3.5.0)
 License: BSD 2-clause License + file LICENSE
 URL: https://github.com/cdalitz/triplclust/
+LazyData: true
 Imports: Rcpp (>= 1.0.0)
 LinkingTo: Rcpp
 Encoding: UTF-8
