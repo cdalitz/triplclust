@@ -5,7 +5,7 @@
 #'
 #' This is an example that works with the default settings of triplclust.
 #'
-#' @format A data frame with 121 rows and three numeric columns: `x`, `y`, and
+#' @format A numeric matrix with 121 rows and three columns: `x`, `y`, and
 #'   `z`.
 #' @source AT-TPC at the NSCL, Michigan State University (courtesy of Yassid Ayyad)
 #' @references Dalitz C., Ayyad Y., Wilberg J., Aymans L., Bazin D., Mittig W.: Automatic trajectory recognition in Active Target Time Projection Chambers data by means of hierarchical clustering. \emph{Computer Physics Communications} 235:159-168 (2019) \doi{10.1016/j.cpc.2018.09.010}
@@ -28,7 +28,7 @@ NULL
 #' threshold detection does not work in this case and it should be manually
 #' set to t=12.
 #'
-#' @format A data frame with 1000 rows and three numeric columns: `x`, `y`,
+#' @format A numeric matrix with 1000 rows and three columns: `x`, `y`,
 #'   and `z`.
 #' @source Geobasisdaten der Kommunen und des Landes NRW (2014), courtesy of
 #'   Katasteramt Krefeld.
@@ -51,7 +51,7 @@ NULL
 #' This is an example for a low point density so that the triplcust parameter
 #' k should be set to k=12.
 #' 
-#' @format A data frame with 701 rows and three numeric columns: `x`, `y`,
+#' @format A numeric matrix with 701 rows and three columns: `x`, `y`,
 #'   and `z`.
 #' @source courtesy of V. Renò
 #' @references Renò V., Mosca N., Nitti M., Guaragnella C., D’Orazio T., Stella E. (2016) Real-time tracking of a tennis ball by combining 3D data and domain knowledge. \emph{International Conference on Technology and Innovation in Sports, Health and Wellbeing (TISHW)} 2016:1-7 \doi{10.1109/TISHW.2016.7847774}
@@ -68,7 +68,7 @@ NULL
 #'
 #' In this example, triplclust merges two curves because they meet tangential.
 #' 
-#' @format A data frame with 225 rows and three numeric columns: `x`, `y`,
+#' @format A numeric matrix with 225 rows and three columns: `x`, `y`,
 #'   and `z`.
 #' @references Dalitz C., Wilberg J., Aymans L. (2019) TriplClust: An
 #' Algorithm for Curve Detection in 3D Point Clouds. \emph{Image Processing On Line} 9:26-46, \doi{10.5201/ipol.2019.234}
@@ -86,7 +86,7 @@ NULL
 #' In this example, the noise confuses the default smoothing of triplclust
 #' and the smoothing radius r should be set to r=1.
 #' 
-#' @format A data frame with 325 rows and three numeric columns: `x`, `y`,
+#' @format A numeric matrix with 325 rows and three columns: `x`, `y`,
 #'   and `z`.
 #' @references Dalitz C., Wilberg J., Aymans L. (2019) TriplClust: An
 #' Algorithm for Curve Detection in 3D Point Clouds. \emph{Image Processing On Line} 9:26-46, \doi{10.5201/ipol.2019.234}

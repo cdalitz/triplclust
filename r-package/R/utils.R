@@ -1,24 +1,61 @@
-#' Convert cluster assignments to gnuplot script text
+#' Convert labels to colors for visualizations.
 #'
-#' @param points Numeric matrix with exactly three columns (x, y, z).
-#' @param labels Either the point-indexed list returned by
-#'   \code{triplclust()} or a per-point integer vector. In a per-point vector,
-#'   `-1` marks noise and non-negative values are zero-based cluster IDs.
-#' @return A character string containing a gnuplot script. Points with multiple
-#'   cluster memberships are shown in a separate overlap series.
+#' @param labels List containing the labels as returned by \code{triplclust()}.
+#'   Alternatively a `triplclust` object can be provided as returned by
+#'   \code{triplclust()}.
+#'
+#' For noise points (no cluster label), red is returned, for instersection
+#' points (more than one cluster label), black is returned. All other cluster
+#' labels are colored with a unique color generated with modulo arithmetic.
+#' @return Character vector of the same length as `labels` with RGB colors.
+#' @examples
+#' tc <- triplclust(attpc)
+#' colors <- label_colors(tc)
+#' 
+#' \dontrun{# visualization with rgl
+#' library(rgl)
+#' plot3d(tc$points, col=colors)
+#' 
+#' # visualization with scatterplot3d
+#' library(scatterplot3d)
+#' scatterplot3d(tc$points, color=colors)
+#' 
+#' # visualization with plot3D
+#' library(plot3D)
+#' points3D(tc$points[,1], tc$points[,2], tc$points[,3],
+#'          colvar=1:length(colors), col=colors, colkey=F)
+#' }
+#' @seealso triplclust
 #' @export
-prepare_plot <- function(points, labels) {
-  if (!is.matrix(points)) {
-    stop("points must be a matrix", call. = FALSE)
+label_colors <- function(labels) {
+  if ("triplclust" %in% class(labels)) {
+    labels <- labels$labels
   }
-  if (!is.numeric(points)) {
-    stop("points must be numeric", call. = FALSE)
-  }
-  if (ncol(points) != 3L) {
-    stop("points must have exactly three columns", call. = FALSE)
+  noise <- sapply(labels, function(x) length(x)==0)
+  intersec <- sapply(labels, function(x) length(x)>1)
+  other <- !(noise | intersec)
+  cols <- character(length(labels))
+  cols[noise] <- grDevices::rgb(1,0,0)
+  cols[intersec] <- grDevices::rgb(0,0,0)
+  cols[other] <- .plot_color_hex(unlist(labels[other]))
+  return(cols)
+}
+
+#' Save triplclust result to gnuplot command file for plotting.
+#'
+#' Noise is plotted in red, points with multiple cluster memberships
+#' are plotted as a separate overlap series. The plot can be shown
+#' from the command line with `gunplot -persist`.
+#' @param tc An object of class `triplclust` as returned by \code{triplclust()}.
+#' @param file File name.
+#' @seealso triplclust
+#' @export
+save_gnuplot <- function(tc, file) {
+  if (!("triplclust" %in% class(tc))) {
+    stop("tc must be of class 'triplclust'", call. = FALSE)
   }
 
-  export_data <- .prepare_export_data(points, labels)
+  export_data <- .prepare_export_data(tc$points, tc$labels)
   cluster_indices <- lapply(export_data$clusters, function(indices) {
     setdiff(indices, export_data$overlap_ids)
   })
@@ -29,8 +66,8 @@ prepare_plot <- function(points, labels) {
   cluster_indices <- cluster_indices[keep_clusters]
 
   axis_names <- c("x", "y", "z")
-  axis_min <- apply(points, 2, min)
-  axis_max <- apply(points, 2, max)
+  axis_min <- apply(tc$points, 2, min)
+  axis_max <- apply(tc$points, 2, max)
   axis_lower <- ifelse(axis_max > axis_min, axis_min, axis_min - 1)
   axis_upper <- ifelse(axis_max > axis_min, axis_max, axis_max + 1)
   ranges <- paste0(
@@ -39,11 +76,11 @@ prepare_plot <- function(points, labels) {
     formatC(axis_upper, digits = 8, format = "f"), "]"
   )
 
-  formatted_points <- paste(formatC(points[, 1], digits = 8, format = "f"),
-    formatC(points[, 2], digits = 8, format = "f"),
-    formatC(points[, 3], digits = 8, format = "f"),
-    sep = " "
-  )
+  formatted_points <- paste(formatC(tc$points[, 1], digits = 8, format = "f"),
+                            formatC(tc$points[, 2], digits = 8, format = "f"),
+                            formatC(tc$points[, 3], digits = 8, format = "f"),
+                            sep = " "
+                            )
   points_block <- function(indices) {
     c(paste(formatted_points[indices], collapse = "\n"), "e")
   }
@@ -59,10 +96,10 @@ prepare_plot <- function(points, labels) {
     character(0)
   }
 
-  cluster_colours <- .plot_colour_hex(cluster_numbers)
+  cluster_colors <- .plot_color_hex(cluster_numbers)
   cluster_series <- if (length(cluster_numbers) > 0L) {
     paste0(
-      "'-' with points lc '", cluster_colours,
+      "'-' with points lc '", cluster_colors,
       "' title 'curve ", cluster_numbers - 1L, "'"
     )
   } else {
@@ -93,49 +130,47 @@ prepare_plot <- function(points, labels) {
     blocks,
     "pause mouse keypress"
   )
-  paste(script, collapse = "\n")
+  f <- file(file)
+  writeLines(script, f)
+  close(f)
 }
 
-#' Convert cluster assignments to CSV text
+#' Save triplclust result as a CSV file.
 #'
-#' @param points Numeric matrix with exactly three columns (x, y, z).
-#' @param labels Either the point-indexed list returned by `triplclust()` or a
-#'   per-point integer vector (`-1` for noise, non-negative IDs for clusters).
-#' @return A character string containing CSV-formatted coordinates and labels,
-#'   with zero-based cluster IDs, `-1` for noise, and semicolon-separated IDs
-#'   when a point belongs to multiple clusters.
+#' The CSV is comma separated with four columns, the x, y, z coordinates,
+#' and the cluster label. Cluster IDs start with zero, `-1` for noise,
+#' and semicolon-separated IDs  when a point belongs to multiple clusters.
+#'
+#' @param tc An object of class `triplclust` as returnde by \code{triplclust()}.
+#' @param file File name.
+#' @seealso triplcust
 #' @export
-prepare_csv <- function(points, labels) {
-  if (!is.matrix(points)) {
-    stop("points must be a matrix", call. = FALSE)
-  }
-  if (!is.numeric(points)) {
-    stop("points must be numeric", call. = FALSE)
-  }
-  if (ncol(points) != 3L) {
-    stop("points must have exactly three columns", call. = FALSE)
+save_csv <- function(tc, file) {
+  if (!("triplclust" %in% class(tc))) {
+    stop("tc must be of class 'triplclust'", call. = FALSE)
   }
 
-  export_data <- .prepare_export_data(points, labels)
-  point_labels <- rep("-1", nrow(points))
-  for (point in seq_len(nrow(points))) {
+  export_data <- .prepare_export_data(tc$points, tc$labels)
+  point_labels <- rep("-1", nrow(tc$points))
+  for (point in seq_len(nrow(tc$points))) {
     cluster_ids <- export_data$point_clusters[[point]]
     if (length(cluster_ids) > 0L) {
       point_labels[[point]] <- paste(cluster_ids - 1L, collapse = ";")
     }
   }
-  rows <- paste(formatC(points[, 1], digits = 6, format = "f"),
-    formatC(points[, 2], digits = 6, format = "f"),
-    formatC(points[, 3], digits = 6, format = "f"),
+  rows <- paste(formatC(tc$points[, 1], digits = 6, format = "f"),
+    formatC(tc$points[, 2], digits = 6, format = "f"),
+    formatC(tc$points[, 3], digits = 6, format = "f"),
     point_labels,
     sep = ","
   )
 
-  paste(c(
+  f <- file(file)
+  writeLines(c(
     "# Comment: curveID -1 represents noise; multiple IDs are separated by semicolons",
-    "# x, y, z, curveID",
-    rows
-  ), collapse = "\n")
+    "# x, y, z, curveID", rows),
+    f)
+  close(f)
 }
 
 
@@ -205,7 +240,7 @@ prepare_csv <- function(points, labels) {
   )
 }
 
-.plot_colour_hex <- function(cluster_index) {
+.plot_color_hex <- function(cluster_index) {
   idx <- as.integer(cluster_index)
   red <- ((idx * 23L) %% 19L) / 18
   green <- ((idx * 23L) %% 7L) / 6

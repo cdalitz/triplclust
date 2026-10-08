@@ -37,6 +37,7 @@
 #' intersections <- tc$points[sapply(tc$labels, function(x) length(x)>1),]
 #' @references Dalitz C., Wilberg J., Aymans L. (2019) TriplClust: An
 #' Algorithm for Curve Detection in 3D Point Clouds. \emph{Image Processing On Line} 9:26-46, \doi{10.5201/ipol.2019.234}
+#' @seealso label_colors save_csv save_gnuplot
 #' @export
 triplclust <- function(points, r = NULL, k = 19L, n = 2L, a = 0.03,
                        s = NULL, t = "auto", dmax = NULL,
@@ -45,12 +46,15 @@ triplclust <- function(points, r = NULL, k = 19L, n = 2L, a = 0.03,
   if (!is.matrix(points) & !is.data.frame(points)) {
     stop("points must be a matrix or data.frame", call. = FALSE)
   }
-  if (ncol(points) >= 3) {
+  if (ncol(points) > 3) {
     if (sum(c("x","y","z") %in% names(points)) == 3) {
       points <- as.matrix(cbind(points$x, points$y, points$z))
     } else {
       points <- as.matrix(points[,1:3])
     }
+  }
+  if (is.data.frame(points)) {
+    points <- as.matrix(points)
   }
   if (!is.numeric(points)) {
     stop("points must be numeric", call. = FALSE)
