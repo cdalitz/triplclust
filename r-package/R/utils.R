@@ -100,7 +100,7 @@ save_gnuplot <- function(tc, file) {
   cluster_series <- if (length(cluster_numbers) > 0L) {
     paste0(
       "'-' with points lc '", cluster_colors,
-      "' title 'curve ", cluster_numbers - 1L, "'"
+      "' title 'curve ", cluster_numbers, "'"
     )
   } else {
     character(0)
@@ -111,7 +111,7 @@ save_gnuplot <- function(tc, file) {
   )
 
   overlap_series <- if (length(overlap_ids) > 0L) {
-    "'-' with points lc 'black' title 'overlap'"
+    "'-' with points lc 'black' title 'overlaps'"
   } else {
     character(0)
   }
@@ -138,10 +138,11 @@ save_gnuplot <- function(tc, file) {
 #' Save triplclust result as a CSV file.
 #'
 #' The CSV is comma separated with four columns, the x, y, z coordinates,
-#' and the cluster label. Cluster IDs start with zero, `-1` for noise,
-#' and semicolon-separated IDs  when a point belongs to multiple clusters.
+#' and the cluster label. For noise, the special label `-1` is used
+#' and, for points belonging to multiple clusters, call clauster labels
+#' are given as a semicolon-separated list.
 #'
-#' @param tc An object of class `triplclust` as returnde by \code{triplclust()}.
+#' @param tc An object of class `triplclust` as returned by \code{triplclust()}.
 #' @param file File name.
 #' @seealso triplcust
 #' @export
@@ -155,7 +156,7 @@ save_csv <- function(tc, file) {
   for (point in seq_len(nrow(tc$points))) {
     cluster_ids <- export_data$point_clusters[[point]]
     if (length(cluster_ids) > 0L) {
-      point_labels[[point]] <- paste(cluster_ids - 1L, collapse = ";")
+      point_labels[[point]] <- paste(cluster_ids, collapse = ";")
     }
   }
   rows <- paste(formatC(tc$points[, 1], digits = 6, format = "f"),

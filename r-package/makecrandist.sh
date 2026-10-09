@@ -2,7 +2,7 @@
 # -------------------------------------------------------------
 #  makecrandist.sh - creates the CRAN source tarball
 #
-#  Result:  triplclustR_<version>.tar.gz
+#  Result:  triplclust_<version>.tar.gz
 #
 #  Everything happens in a temporary directory, so the
 #  repository itself is never modified.
@@ -15,7 +15,7 @@ SRCDIR=../src                     # where the C++ source of triplclust are
 OLDDIR="$(pwd)"
 WORK="$(mktemp -d)"
 trap 'rm -rf "${WORK}"' EXIT      # clean up tmpdir after sript ends
-PKG="${WORK}/triplclustR"         # temporary package
+PKG="${WORK}/triplclust"         # temporary package
 
 # ---------- Step 1: copy the R package ----------
 mkdir -p "${PKG}"
@@ -68,7 +68,7 @@ Rscript -e "roxygen2::roxygenise('.', roclets = c('namespace', 'collate', 'rd'))
 
 # ---------- Step 6: build the tarball ----------
 cd "${WORK}"
-R CMD build triplclustR
-mv triplclustR_*.tar.gz "${OLDDIR}/"
+R CMD build triplclust
+mv triplclust_*.tar.gz "${OLDDIR}/"
 
 echo "Tarball created in: ${OLDDIR}/"

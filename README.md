@@ -15,6 +15,8 @@ Please cite this article when using the code. The article was published
 on IPOL with version 1.3 of this code. For changes since then, see the file
 *CHANGES*.
 
+The following instructions decribe compilation and usage of the C++ binary.
+For instructions how to install and use the R package, see r-package/README.md.
 
 Compilation
 -----------

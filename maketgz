@@ -35,7 +35,7 @@ ln -s . $DIR
 
 tar czvf $DIR.tgz \
     $DIR/README.md $DIR/CMakeLists.txt $DIR/CHANGES $DIR/LICENSE \
-	$DIR/test.dat $DIR/cdist-plot.r $DIR/src $DIR/data
+	$DIR/test.dat $DIR/cdist-plot.r $DIR/src $DIR/data $DIR/r-package
 
 # clean up
 rm $DIR

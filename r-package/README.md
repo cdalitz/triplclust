@@ -2,48 +2,39 @@
 
 R package providing an interface to the **TriplClust** algorithm for 3D point-cloud clustering.
 
-## Build
-From the repository root, build the source tarball with:
+## Build & Install
+From the sudirectory `r-package` of the repository root, build the source tarball with:
 
-```sh
-./triplclustLibR/makecrandist.sh
+```bash makecrandist.sh
 ```
 
-The tarball is written to `triplclustLibR/`.
+This creates the source tarball `triplclust_*.*.*.tar.gz` that is installed with
 
-## Installation
-From the repository root, install the generated tarball with:
-
-```r
-install.packages("triplclustLibR/triplclust_1.0.1.tar.gz",
-                 repos = NULL, type = "source")
-```
-
-## Verification
-After building the C++ executable and installing the R package, run from the
-repository root:
-
-```sh
-./triplclustLibR/verify.sh
-```
-
-To generate a gnuplot script and display the bundled data:
-
-```sh
-Rscript triplclustLibR/inst/scripts/use_triplclust.R data/attpc.dat -gnuplot | gnuplot --persist
+```R CMD INSTALL triplclust_*.*.*.tar.gz
 ```
 
 ## Basic usage
-The function accepts an `n x 3` numeric matrix and returns a list of clusters.
-Each list element contains the 1-based row indices of its points. A point may
-occur in multiple clusters; points absent from every cluster are unassigned.
+The main function is `triplclust` that accepts an `n x 3` numeric matrix and returns
+a triplclust object with two entires: the input points (`points`) and teh assigned
+clusters per point as a list `labels` of the same length as `nrows(points)`.
+A point may occur in multiple clusters; points absent from every cluster have an empty
+numeric label vector.
+
+Here is an example how to apply triplclust to the included dataset `attpc`:
 
 ```r
 library(triplclust)
+tc <- triplclust(attpc)
 
-data("attpc", package = "triplclust")
-points <- as.matrix(attpc)
-clusters <- triplclust(points)
+# visualization with rgl
+colors <- label_colors(tc)
+library(rgl)
+plot3d(tc$points, col=colors)
 
-lengths(clusters)  # number of points in each cluster
+# visualization with external software gnuplot
+save_gnuplot(tc, "/tmp/tc.gnuplot")
+system("gnuplot -persist /tmp/tc.gnuplot")
+
+# save result as CSV file
+save.csv(tc, "result.csv")
 ```

@@ -1,6 +1,12 @@
 Change log of triplclust
 =========================
 
+Version 1.5 from 2026-10-09
+---------------------------
+
+ - R package added; see r-package/README.md for installation & usage.
+
+
 Version 1.4 from 2024-02-16
 ---------------------------
 
