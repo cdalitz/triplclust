@@ -48,13 +48,17 @@ mv src/kdtree/kdtree.cpp src/
 
 # ---------- Step 4: adapt the sources for CRAN ----------
 # (a) remove warning-suppression pragmas
-sed -i -e '/^[[:space:]]*#pragma GCC diagnostic /d' \
-       src/*.cpp src/hclust/*.cpp
+for f in src/*.cpp src/hclust/*.cpp; do
+	sed '/^[[:space:]]*#pragma GCC diagnostic /d' "$f" >bla && mv bla "$f"
+done
+       
 
 # (c) CRAN forbids std::cout / std::cerr: use Rcpp::Rcout instead
 for f in $(grep -lE 'std::(cout|cerr)' src/*.cpp || true); do
-  sed -i -e 's/std::cout/Rcpp::Rcout/g' -e 's/std::cerr/Rcpp::Rcout/g' "$f"
-  sed -i '1i #include <Rcpp.h>' "$f"
+  sed -E 's/std::(cout|cerr)/Rcpp::Rcout/g' "$f" >bla && mv bla "$f"
+  sed '1i\
+#include <Rcpp.h>\
+' "$f" >bla && mv bla "$f"
 done
 
 # ---------- Step 5: generate Rcpp glue code and documentation ----------
