@@ -4,22 +4,22 @@
 #'   Alternatively a `triplclust` object can be provided as returned by
 #'   \code{triplclust()}.
 #'
-#' For noise points (no cluster label), red is returned, for instersection
+#' For noise points (no cluster label), red is returned, for intersection
 #' points (more than one cluster label), black is returned. All other cluster
 #' labels are colored with a unique color generated with modulo arithmetic.
 #' @return Character vector of the same length as `labels` with RGB colors.
 #' @examples
 #' tc <- triplclust(attpc)
 #' colors <- label_colors(tc)
-#' 
+#'
 #' \dontrun{# visualization with rgl
 #' library(rgl)
 #' plot3d(tc$points, col=colors)
-#' 
+#'
 #' # visualization with scatterplot3d
 #' library(scatterplot3d)
 #' scatterplot3d(tc$points, color=colors)
-#' 
+#'
 #' # visualization with plot3D
 #' library(plot3D)
 #' points3D(tc$points[,1], tc$points[,2], tc$points[,3],
@@ -31,21 +31,21 @@ label_colors <- function(labels) {
   if ("triplclust" %in% class(labels)) {
     labels <- labels$labels
   }
-  noise <- sapply(labels, function(x) length(x)==0)
-  intersec <- sapply(labels, function(x) length(x)>1)
+  noise <- sapply(labels, function(x) length(x) == 0)
+  intersec <- sapply(labels, function(x) length(x) > 1)
   other <- !(noise | intersec)
   cols <- character(length(labels))
-  cols[noise] <- grDevices::rgb(1,0,0)
-  cols[intersec] <- grDevices::rgb(0,0,0)
+  cols[noise] <- grDevices::rgb(1, 0, 0)
+  cols[intersec] <- grDevices::rgb(0, 0, 0)
   cols[other] <- .plot_color_hex(unlist(labels[other]))
-  return(cols)
+  cols
 }
 
 #' Save triplclust result to gnuplot command file for plotting.
 #'
 #' Noise is plotted in red, points with multiple cluster memberships
 #' are plotted as a separate overlap series. The plot can be shown
-#' from the command line with `gunplot -persist`.
+#' from the command line with `gnuplot -persist`.
 #' @param tc An object of class `triplclust` as returned by \code{triplclust()}.
 #' @param file File name.
 #' @seealso triplclust
@@ -76,11 +76,12 @@ save_gnuplot <- function(tc, file) {
     formatC(axis_upper, digits = 8, format = "f"), "]"
   )
 
-  formatted_points <- paste(formatC(tc$points[, 1], digits = 8, format = "f"),
-                            formatC(tc$points[, 2], digits = 8, format = "f"),
-                            formatC(tc$points[, 3], digits = 8, format = "f"),
-                            sep = " "
-                            )
+  formatted_points <- paste(
+    formatC(tc$points[, 1], digits = 8, format = "f"),
+    formatC(tc$points[, 2], digits = 8, format = "f"),
+    formatC(tc$points[, 3], digits = 8, format = "f"),
+    sep = " "
+  )
   points_block <- function(indices) {
     c(paste(formatted_points[indices], collapse = "\n"), "e")
   }
@@ -139,12 +140,12 @@ save_gnuplot <- function(tc, file) {
 #'
 #' The CSV is comma separated with four columns, the x, y, z coordinates,
 #' and the cluster label. For noise, the special label `-1` is used
-#' and, for points belonging to multiple clusters, call clauster labels
+#' and, for points belonging to multiple clusters, all cluster labels
 #' are given as a semicolon-separated list.
 #'
 #' @param tc An object of class `triplclust` as returned by \code{triplclust()}.
 #' @param file File name.
-#' @seealso triplcust
+#' @seealso triplclust
 #' @export
 save_csv <- function(tc, file) {
   if (!("triplclust" %in% class(tc))) {
@@ -167,10 +168,14 @@ save_csv <- function(tc, file) {
   )
 
   f <- file(file)
-  writeLines(c(
-    "# Comment: curveID -1 represents noise; multiple IDs are separated by semicolons",
-    "# x, y, z, curveID", rows),
-    f)
+  writeLines(
+    c(
+      "# Comment: curveID -1 represents noise; multiple IDs are separated by semicolons", # nolint: line_length_linter.
+      "# x, y, z, curveID",
+      rows
+    ),
+    f
+  )
   close(f)
 }
 
