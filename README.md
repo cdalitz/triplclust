@@ -21,7 +21,7 @@ For instructions how to install and use the R package, see r-package/README.md.
 Compilation
 -----------
 
-Building the code requires cmake and a standard C++11 (or later) compiler.
+Building the code requires cmake and a standard C++98 (or later) compiler.
 We have tested the code with gcc 5.4.0, LLVM 9.0.0, and MSVC 15.7.5.
 
 Starting from the root directory (i.e., the directory, in which this
@@ -129,13 +129,13 @@ Source Files
    Implementation of the characteristic length computation
    (section 3.1 of the IPOL paper)
 
-  - ``option.[h|cpp]``
+ - ``option.[h|cpp]``
    Utilities for handling and storing command line options.
 
-  - ``output.[h|cpp]``
+ - ``output.[h|cpp]``
    Functions for writing CSV and gnuplot output.
 
-  - ``util.[h|cpp]``
+ - ``util.[h|cpp]``
    Convenience functions not fitting elsewhere.
 
 The subdirectories ``src/hclust/`` and ``src/kdtree/`` contain the fastcluster
@@ -149,8 +149,9 @@ in the IPOL paper.
 Authors & Copyright
 -------------------
 
-Christoph Dalitz, 2017-2024
-Jens Wilberg, Lukas Aymans, 2017-2018  
+Christoph Dalitz, 2017-2026
+Jens Wilberg, Lukas Aymans, 2017-2018
+Vitali Krieger, 2026
 Institute for Pattern Recognition  
 Niederrhein University of Applied Sciences  
 Krefeld, Germany

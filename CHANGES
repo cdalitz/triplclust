@@ -1,6 +1,11 @@
 Change log of triplclust
 =========================
 
+ - corrected erroneous range check for parameter -a
+
+ - now again C++98 compatible
+
+
 Version 1.5 from 2026-10-10
 ---------------------------
 

@@ -46,9 +46,8 @@ bool validate_parameters( const PointCloud          &cloud,
     }
 
     // ---- 3) angle -------------------------------------------------------
-    constexpr double PI = 3.1415926535897932384626433;
-    if (par.a <= 0.0 || par.a >= PI) {
-        errMsg = "[triplclust] alpha (-a) must be in (0, π)";
+    if (par.a <= 0.0 || par.a >= 1.0) {
+        errMsg = "[triplclust] cos(alpha) (-a) must be in (0, 1)";
         return false;
     }
 
