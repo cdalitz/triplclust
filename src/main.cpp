@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 #include "cluster.h"
 #include "dnn.h"
 #include "option.h"
@@ -101,35 +102,40 @@ int main(int argc, char **argv) {
     return 2;
   }
 
-  // compute characteristic length dnn if needed
-  if (opt_params.needs_dnn()) {
-    double dnn = std::sqrt(first_quartile(cloud_xyz));
-    if (opt_verbose > 0) {
-      std::cout << "[Info] computed dnn: " << dnn << std::endl;
-    }
-    opt_params.set_dnn(dnn);
-    if (dnn == 0.0) {
+  TriplClustParameters parameters;
+  parameters.r = opt_params.get_r();
+  parameters.r_dnn = opt_params.get_r_dnn();
+  parameters.k = opt_params.get_k();
+  parameters.n = opt_params.get_n();
+  parameters.a = opt_params.get_a();
+  parameters.s = opt_params.get_s();
+  parameters.s_dnn = opt_params.get_s_dnn();
+  parameters.t = opt_params.get_t();
+  parameters.tauto = opt_params.is_tauto();
+  parameters.dmax = opt_params.get_dmax();
+  parameters.dmax_dnn = opt_params.get_dmax_dnn();
+  parameters.is_dmax = opt_params.is_dmax();
+  parameters.linkage = opt_params.get_linkage();
+  parameters.m = opt_params.get_m();
+  parameters.verbose = opt_verbose;
+  cluster_group cl_group;
+  // merge distances of the triplet clustering, only needed for the debug
+  // trace below
+  std::vector<double> cdist;
+  try {
+    cl_group = triplclust(cloud_xyz, parameters, &cdist);
+  } catch (const std::invalid_argument &e) {
+    std::string what(e.what());
+    if (what.find("dNN") != std::string::npos ||
+        what.find("dnn") != std::string::npos ||
+        what.find("two points") != std::string::npos) {
       std::cerr << "[Error] dnn computed as zero. "
                 << "Suggestion: remove doublets, e.g. with 'sort -u'"
                 << std::endl;
       return 3;
     }
+    throw;
   }
-
-  TriplClustParameters parameters;
-  parameters.r = opt_params.get_r();
-  parameters.k = opt_params.get_k();
-  parameters.n = opt_params.get_n();
-  parameters.a = opt_params.get_a();
-  parameters.s = opt_params.get_s();
-  parameters.t = opt_params.get_t();
-  parameters.tauto = opt_params.is_tauto();
-  parameters.dmax = opt_params.get_dmax();
-  parameters.is_dmax = opt_params.is_dmax();
-  parameters.linkage = opt_params.get_linkage();
-  parameters.m = opt_params.get_m();
-  parameters.verbose = opt_verbose;
-  cluster_group cl_group = triplclust(cloud_xyz, parameters);
 
   // store cluster labels in points
   add_clusters(cloud_xyz, cl_group, opt_params.is_gnuplot());
@@ -155,6 +161,52 @@ int main(int argc, char **argv) {
     clusters_to_gnuplot(cloud_xyz, cl_group);
   } else {
     clusters_to_csv(cloud_xyz);
+  }
+
+  // report the parameters that were effectively used. Everything the library
+  // resolved is now in *parameters*, so all info messages can be printed
+  // here instead of in the middle of the algorithm.
+  if (opt_verbose > 0) {
+    // clusters_to_csv() left std::cout in fixed notation
+    std::cout.unsetf(std::ios_base::floatfield);
+    if (opt_params.needs_dnn()) {
+      std::cout << "[Info] computed dnn: " << parameters.debug.dnn << std::endl;
+      if (opt_params.get_r_dnn()) {
+        std::cout << "[Info] computed smoothed radius: " << parameters.r
+                  << std::endl;
+      }
+      if (opt_params.get_s_dnn()) {
+        std::cout << "[Info] computed distance scale: " << parameters.s
+                  << std::endl;
+      }
+      if (opt_params.is_dmax() && opt_params.get_dmax_dnn()) {
+        std::cout << "[Info] computed max gap: " << parameters.dmax
+                  << std::endl;
+      }
+    }
+    // an empty cdist means the clustering never ran, so there is no threshold
+    if (opt_params.is_tauto() && !cdist.empty()) {
+      std::cout << "[Info] optimal cdist threshold: "
+                << parameters.debug.t << std::endl;
+    }
+    std::cout << "[Info] in pruning removed clusters: "
+              << parameters.debug.pruned_clusters << std::endl;
+  }
+
+  // write the merge distances of the triplet clustering for inspection.
+  // Without triplets there is nothing to trace, so no file is created.
+  if (opt_verbose > 1 && !cdist.empty()) {
+    const char *fname = "debug_cdist.csv";
+    std::ofstream of(fname);
+    of << std::fixed;  // set float style
+    if (of.is_open()) {
+      for (size_t i = 0; i < cdist.size(); ++i) {
+        of << cdist[i] << std::endl;
+      }
+    } else {
+      std::cerr << "[Error] could not write file '" << fname << "'\n";
+    }
+    of.close();
   }
 
   return 0;

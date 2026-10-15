@@ -1,3 +1,66 @@
+# Description of every entry of the "params" list returned by triplclust().
+.triplclust_param_descriptions <- c(
+  r = "smoothing radius as requested",
+  r_dnn = "r is given as a multiple of dNN",
+  r_real = "absolute smoothing radius used",
+  k = "neighbours considered for triplet generation",
+  n = "best triplets kept per midpoint",
+  a = "max angle between the triplet branches",
+  s = "distance scale as requested",
+  s_dnn = "s is given as a multiple of dNN",
+  s_real = "absolute distance scale used",
+  t = "cluster distance threshold as requested",
+  tauto = "t is determined automatically",
+  t_real = "absolute cluster distance threshold used",
+  dmax = "max gap within a triplet as requested",
+  dmax_dnn = "dmax is given as a multiple of dNN",
+  is_dmax = "splitting of clusters at gaps is enabled",
+  dmax_real = "absolute max gap used",
+  dnn_real = "absolute dNN used for scaling, 0 if not needed",
+  linkage = "linkage method",
+  m = "minimum cluster size",
+  verbose = "verbosity level"
+)
+
+#' Print the parameters of a triplclust run.
+#'
+#' Prints the \code{$params} element of a \code{triplclust} object as a table
+#' with one row per parameter, showing the requested value next to the value
+#' that was actually used. Parameters that are given as a multiple of dNN
+#' appear twice: under their plain name as they were requested, together with
+#' the flag that states that they are a multiple of dNN, and with the suffix
+#' \code{_real} as the absolute number that was used.
+#'
+#' The same information is available programmatically from
+#' \code{attributes(tc$params)$description}.
+#'
+#' @param x The \code{params} element of a \code{triplclust} object.
+#' @param ... Further arguments passed to \code{print.data.frame}.
+#' @return \code{x}, invisibly. Called for its side effect of printing.
+#' @examples
+#' tc <- triplclust(attpc)
+#' tc$params
+#' @seealso triplclust
+#' @export
+print.triplclust_params <- function(x, ...) {
+  descriptions <- attr(x, "description")
+  values <- vapply(x, function(value) {
+    paste(format(value), collapse = ", ")
+  }, character(1))
+  if (is.null(descriptions)) {
+    descriptions <- rep(NA_character_, length(x))
+  }
+  table <- data.frame(
+    parameter = names(x),
+    value = unname(values),
+    description = unname(descriptions[names(x)]),
+    stringsAsFactors = FALSE,
+    row.names = NULL
+  )
+  print.data.frame(table, ...)
+  invisible(x)
+}
+
 #' Convert labels to colors for visualizations.
 #'
 #' @param labels List containing the labels as returned by \code{triplclust()}.
@@ -177,6 +240,51 @@ save_csv <- function(tc, file) {
     f
   )
   close(f)
+}
+
+#' Get the cdist threshold trace as it would be written to disk.
+#'
+#' Returns the content of the file that the command line version of
+#' TriplClust writes to \code{debug_cdist.csv} when it is run with
+#' \code{-vv}: one merge distance per line, in fixed notation with six
+#' decimal places, each terminated by a newline. These are the dendrogram
+#' heights whose jump marks the threshold that was applied; see
+#' \code{tc$params$t_real}. The file is not written; use \code{writeLines}
+#' or \code{cat} if you want to save the result.
+#'
+#' @param triplclust An object of class `triplclust` as returned by
+#'   \code{triplclust()}.
+#' @return A single character string with the full content of the trace file,
+#'   or the empty string if no triplets were generated and the file would be
+#'   empty as well.
+#' @examples
+#' tc <- triplclust(attpc)
+#' # first lines of the trace
+#' head(strsplit(plot_threshold(tc), "\n", fixed = TRUE)[[1]], 3)
+#' # save it
+#' \dontrun{
+#' writeLines(plot_threshold(tc), "debug_cdist.csv")
+#' }
+#' @seealso triplclust
+#' @export
+plot_threshold <- function(triplclust) {
+  if (!("triplclust" %in% class(triplclust))) {
+    stop("triplclust must be of class 'triplclust'", call. = FALSE)
+  }
+  cdist <- triplclust$cdist
+  if (is.null(cdist)) {
+    stop("triplclust does not contain the cdist values", call. = FALSE)
+  }
+  if (!is.numeric(cdist)) {
+    stop("the cdist values must be numeric", call. = FALSE)
+  }
+  if (length(cdist) == 0L) {
+    # the C++ loop writes nothing, so the file would be empty
+    return("")
+  }
+  # same as "std::fixed" with the default precision of 6
+  lines <- formatC(cdist, digits = 6, format = "f")
+  paste0(paste0(lines, collapse = "\n"), "\n")
 }
 
 
