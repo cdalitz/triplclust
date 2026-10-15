@@ -19,7 +19,11 @@ PKG="${WORK}/triplclust"         # temporary package
 
 # ---------- Step 1: copy the R package ----------
 mkdir -p "${PKG}"
-cp -a * "${PKG}"
+cp -a . "${PKG}/"  # "." (not "*") so .Rbuildignore ships as well
+
+# Remove files that must not ship inside the tarball
+rm -f "${PKG}"/*.tar.gz
+rm -rf "${PKG}"/build
 
 
 # ---------- Step 2: license ----------
@@ -32,13 +36,13 @@ cp -r ${SRCDIR}/hclust ${SRCDIR}/kdtree "${PKG}"/src/
 cp ${SRCDIR}/*.cpp ${SRCDIR}/*.h "${PKG}"/src/
 
 
-# These two are only needed for the standalone binary
 cd "${PKG}"
 
 # Remove files that do not belong into the CRAN package
 rm -f makecrandist.sh verify.sh
 #rm -f src/*.o src/*.so src/RcppExports.*
-rm src/main.cpp src/option.cpp
+# These files are only needed for the standalone binary
+rm src/main.cpp src/option.cpp src/option.h
 
 # R compiles only the .cpp files directly in src/, so move them up.
 # The fastcluster_*dm.cpp files stay in hclust/ because they are #included.
@@ -71,6 +75,7 @@ Rscript -e "Rcpp::compileAttributes('.')"
 Rscript -e "roxygen2::roxygenise('.', roclets = c('namespace', 'collate', 'rd'))"
 
 # ---------- Step 6: build the tarball ----------
+rm -rf build  # must not ship (also excluded via .Rbuildignore)
 cd "${WORK}"
 R CMD build triplclust
 mv triplclust_*.tar.gz "${OLDDIR}/"

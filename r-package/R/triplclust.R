@@ -27,7 +27,9 @@
 #' containing the following components:
 #' \itemize{
 #'  \item points: Matrix of input points.
-#'  \item labels: List with the assigned cluster labels encoded as one integer vector per input point. Each vector contains the IDs of the clusters containing that point. Unassigned points have an empty vector.
+#'  \item labels: List with the assigned cluster labels encoded as one
+#'    integer vector per input point. Each vector contains the IDs of the
+#'    clusters containing that point. Unassigned points have an empty vector.
 #' }
 #' @examples
 #' tc <- triplclust(attpc)
@@ -36,21 +38,23 @@
 #' # points assigned to more than one cluster (intersections)
 #' intersections <- tc$points[sapply(tc$labels, function(x) length(x)>1),]
 #' @references Dalitz C., Wilberg J., Aymans L. (2019) TriplClust: An
-#' Algorithm for Curve Detection in 3D Point Clouds. \emph{Image Processing On Line} 9:26-46, \doi{10.5201/ipol.2019.234}
+#'   Algorithm for Curve Detection in 3D Point Clouds.
+#'   \emph{Image Processing On Line} 9:26-46,
+#'   \doi{10.5201/ipol.2019.234}
 #' @seealso label_colors save_csv save_gnuplot
 #' @export
 triplclust <- function(points, r = NULL, k = 19L, n = 2L, a = 0.03,
                        s = NULL, t = "auto", dmax = NULL,
                        linkage = "single", m = 5L,
                        ordered = FALSE) {
-  if (!is.matrix(points) & !is.data.frame(points)) {
+  if (!is.matrix(points) && !is.data.frame(points)) {
     stop("points must be a matrix or data.frame", call. = FALSE)
   }
   if (ncol(points) > 3) {
-    if (sum(c("x","y","z") %in% names(points)) == 3) {
+    if (sum(c("x", "y", "z") %in% names(points)) == 3) {
       points <- as.matrix(cbind(points$x, points$y, points$z))
     } else {
-      points <- as.matrix(points[,1:3])
+      points <- as.matrix(points[, 1:3])
     }
   }
   if (is.data.frame(points)) {
@@ -66,8 +70,8 @@ triplclust <- function(points, r = NULL, k = 19L, n = 2L, a = 0.03,
     # add dummy column
     points <- as.matrix(cbind(points, rep(0, NROW(points))))
   }
-  if (sum(c("x","y","z") %in% names(points)) != 3) {
-    colnames(points) <- c("x","y","z")
+  if (sum(c("x", "y", "z") %in% names(points)) != 3) {
+    colnames(points) <- c("x", "y", "z")
   }
   if (nrow(points) < 3) {
     stop("points must contain at least three rows", call. = FALSE)
@@ -126,9 +130,9 @@ triplclust <- function(points, r = NULL, k = 19L, n = 2L, a = 0.03,
     points, r$value, r$dnn, k, n, a,
     s$value, s$dnn, t, automatic,
     dmax$value, dmax$dnn, dmax$enabled,
-    linkage, m, verbose=0, ordered
+    linkage, m, verbose = 0, ordered
   )
-  return(structure(list(points=points, labels=labels), class = "triplclust"))
+  structure(list(points = points, labels = labels), class = "triplclust")
 }
 
 .parse_distance <- function(value, name, default, default_dnn = FALSE,

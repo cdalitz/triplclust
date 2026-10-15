@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8...4.4 FATAL_ERROR)
 
 project(triplclust)
 
@@ -12,7 +12,7 @@ endif (MSVC)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 
 # all source files
-set(SRC src/cluster.cpp src/triplet.cpp src/main.cpp src/dnn.cpp src/hclust/fastcluster.cpp src/kdtree/kdtree.cpp src/pointcloud.cpp src/output.cpp src/option.cpp src/util.cpp src/graph.cpp)
+set(SRC src/cluster.cpp src/triplet.cpp src/main.cpp src/dnn.cpp src/hclust/fastcluster.cpp src/kdtree/kdtree.cpp src/pointcloud.cpp src/output.cpp src/option.cpp src/util.cpp src/graph.cpp src/triplclust.cpp)
 
 # default target (created with "make")
 add_executable (triplclust ${SRC})

@@ -3,20 +3,22 @@
 R package providing an interface to the **TriplClust** algorithm for 3D point-cloud clustering.
 
 ## Build & Install
-From the sudirectory `r-package` of the repository root, build the source tarball with:
+From the subdirectory `r-package` of the repository root, build the source tarball with:
 
-```bash makecrandist.sh
+```bash
+./makecrandist.sh
 ```
 
 This creates the source tarball `triplclust_*.*.*.tar.gz` that is installed with
 
-```R CMD INSTALL triplclust_*.*.*.tar.gz
+```bash
+R CMD INSTALL triplclust_*.*.*.tar.gz
 ```
 
 ## Basic usage
 The main function is `triplclust` that accepts an `n x 3` numeric matrix and returns
-a triplclust object with two entires: the input points (`points`) and teh assigned
-clusters per point as a list `labels` of the same length as `nrows(points)`.
+a triplclust object with two entries: the input points (`points`) and the assigned
+clusters per point as a list `labels` of the same length as `nrow(points)`.
 A point may occur in multiple clusters; points absent from every cluster have an empty
 numeric label vector.
 
@@ -36,5 +38,5 @@ save_gnuplot(tc, "/tmp/tc.gnuplot")
 system("gnuplot -persist /tmp/tc.gnuplot")
 
 # save result as CSV file
-save.csv(tc, "result.csv")
+save_csv(tc, "result.csv")
 ```

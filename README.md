@@ -15,13 +15,13 @@ Please cite this article when using the code. The article was published
 on IPOL with version 1.3 of this code. For changes since then, see the file
 *CHANGES*.
 
-The following instructions decribe compilation and usage of the C++ binary.
+The following instructions describe compilation and usage of the C++ binary.
 For instructions how to install and use the R package, see r-package/README.md.
 
 Compilation
 -----------
 
-Building the code requires cmake and a standard C++98 (or later) compiler.
+Building the code requires cmake and a standard C++11 (or later) compiler.
 We have tested the code with gcc 5.4.0, LLVM 9.0.0, and MSVC 15.7.5.
 
 Starting from the root directory (i.e., the directory, in which this
@@ -93,8 +93,20 @@ Source Files
 ------------
 
  - ``main.cpp``  
-   Main program that calls the four steps of the algorithm
-   (beginning of section 2 in the IPOL paper)
+   Command line interface: parses the options, loads the point
+   cloud from CSV, computes the characteristic length dNN if needed,
+   calls the library function ``triplclust()`` with a
+   ``TriplClustParameters`` struct, and writes the result as CSV
+   and/or gnuplot output
+
+ - ``triplclust.[h|cpp]``  
+   Library interface and implementation of the TriplClust algorithm:
+   defines the ``TriplClustParameters`` struct and the function
+   ``triplclust()``, which runs the four steps of the algorithm
+   (section 2 in the paper) - smoothing, triplet generation, hierarchical
+   clustering and pruning/gap splitting -
+   including parameter validation and dNN scaling. Used by both the
+   C++ binary (``main.cpp``) and the R package
 
  - ``pointcloud.[h|cpp]``  
    Implementation of 3D points and clouds thereof,
@@ -117,13 +129,16 @@ Source Files
    Implementation of the characteristic length computation
    (section 3.1 of the IPOL paper)
 
- - ``option.[h|cpp]``
+  - ``option.[h|cpp]``
    Utilities for handling and storing command line options.
 
- - ``util.[h|cpp]``
+  - ``output.[h|cpp]``
+   Functions for writing CSV and gnuplot output.
+
+  - ``util.[h|cpp]``
    Convenience functions not fitting elsewhere.
 
-The subdirectories ``hclust/`` and ``kdtree/`` contain the fastcluster
+The subdirectories ``src/hclust/`` and ``src/kdtree/`` contain the fastcluster
 implementation by Daniel Müllner and the kd-tree implementation by
 Christoph Dalitz.
 
