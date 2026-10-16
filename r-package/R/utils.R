@@ -1,36 +1,3 @@
-#' Print the parameters of a triplclust run.
-#'
-#' Prints the \code{$params} element of a \code{triplclust} object as a table
-#' with one row per parameter, showing the requested value next to the value
-#' that was actually used. Parameters that are given as a multiple of dNN
-#' appear twice: under their plain name as they were requested, together with
-#' the flag that states that they are a multiple of dNN, and with the suffix
-#' \code{_real} as the absolute number that was used.
-#'
-#' The meaning of each parameter is documented in \code{\link{triplclust}}.
-#'
-#' @param x The \code{params} element of a \code{triplclust} object.
-#' @param ... Further arguments passed to \code{print.data.frame}.
-#' @return \code{x}, invisibly. Called for its side effect of printing.
-#' @examples
-#' tc <- triplclust(attpc)
-#' tc$params
-#' @seealso triplclust
-#' @export
-print.triplclust_params <- function(x, ...) {
-  values <- vapply(x, function(value) {
-    paste(format(value), collapse = ", ")
-  }, character(1))
-  table <- data.frame(
-    parameter = names(x),
-    value = unname(values),
-    stringsAsFactors = FALSE,
-    row.names = NULL
-  )
-  print.data.frame(table, ...)
-  invisible(x)
-}
-
 #' Convert labels to colors for visualizations.
 #'
 #' @param labels List containing the labels as returned by \code{triplclust()}.
