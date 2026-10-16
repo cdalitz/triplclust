@@ -30,7 +30,7 @@ its `_dnn` flag is `TRUE` (for example `r` is `2` and `r_dnn` is `TRUE` for
 that was actually used. So `params$r_real` is the resulting smoothing radius and
 `params$dnn_real` the characteristic length it was derived from. The `_real`
 entries are resolved during the run and are only reported for debugging and
-reproducibility.
+reproducibility. The meaning of every entry is documented in `?triplclust`.
 
 `cdist` is a numeric vector with the distance of each of the n-1 merge steps of
 the triplet clustering, i.e. the heights of the dendrogram in ascending order.

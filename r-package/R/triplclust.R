@@ -38,13 +38,29 @@
 #'    `_real` entries are resolved during the run and are only reported for
 #'    debugging and reproducibility; the algorithm does not use them.
 #'    \describe{
-#'      \item{`r_real`, `s_real`, `dmax_real`}{absolute smoothing radius,
-#'        distance scale and maximum gap}
-#'      \item{`dnn_real`}{the absolute characteristic length that was used for
-#'        scaling, `0` if no parameter depended on dNN}
+#'      \item{`r`}{smoothing radius as requested}
+#'      \item{`r_dnn`}{`TRUE` if `r` was given as a multiple of dNN}
+#'      \item{`r_real`}{absolute smoothing radius used}
+#'      \item{`k`}{neighbours considered for triplet generation}
+#'      \item{`n`}{best triplets kept per midpoint}
+#'      \item{`a`}{max angle between the triplet branches}
+#'      \item{`s`}{distance scale as requested}
+#'      \item{`s_dnn`}{`TRUE` if `s` was given as a multiple of dNN}
+#'      \item{`s_real`}{absolute distance scale used}
+#'      \item{`t`}{cluster distance threshold as requested}
+#'      \item{`tauto`}{`TRUE` if `t` was determined automatically}
 #'      \item{`t_real`}{the absolute cluster distance threshold that was
 #'        actually applied, i.e. the automatically determined one when `tauto`
 #'        is `TRUE` and otherwise simply `t`}
+#'      \item{`dmax`}{max gap within a triplet as requested}
+#'      \item{`dmax_dnn`}{`TRUE` if `dmax` was given as a multiple of dNN}
+#'      \item{`is_dmax`}{`TRUE` if splitting of clusters at gaps is enabled}
+#'      \item{`dmax_real`}{absolute max gap used}
+#'      \item{`dnn_real`}{the absolute characteristic length that was used for
+#'        scaling, `0` if no parameter depended on dNN}
+#'      \item{`linkage`}{linkage method}
+#'      \item{`m`}{minimum cluster size}
+#'      \item{`verbose`}{verbosity level, always `0` from the R interface}
 #'    }
 #'    Note that `k`, `n`, `a`, `linkage` and `m` are never rescaled and
 #'    therefore have no `_real` counterpart.
@@ -163,9 +179,8 @@ triplclust <- function(points, r = NULL, k = 19L, n = 2L, a = 0.03,
     linkage, m, ordered
   )
   params <- result$params
-attr(params, "description") <- .triplclust_param_descriptions[names(params)]
-class(params) <- c("triplclust_params", "list")
-structure(
+  class(params) <- c("triplclust_params", "list")
+  structure(
     list(points = points, labels = result$labels, params = params,
          cdist = result$cdist),
     class = "triplclust"

@@ -1,27 +1,3 @@
-# Description of every entry of the "params" list returned by triplclust().
-.triplclust_param_descriptions <- c(
-  r = "smoothing radius as requested",
-  r_dnn = "r is given as a multiple of dNN",
-  r_real = "absolute smoothing radius used",
-  k = "neighbours considered for triplet generation",
-  n = "best triplets kept per midpoint",
-  a = "max angle between the triplet branches",
-  s = "distance scale as requested",
-  s_dnn = "s is given as a multiple of dNN",
-  s_real = "absolute distance scale used",
-  t = "cluster distance threshold as requested",
-  tauto = "t is determined automatically",
-  t_real = "absolute cluster distance threshold used",
-  dmax = "max gap within a triplet as requested",
-  dmax_dnn = "dmax is given as a multiple of dNN",
-  is_dmax = "splitting of clusters at gaps is enabled",
-  dmax_real = "absolute max gap used",
-  dnn_real = "absolute dNN used for scaling, 0 if not needed",
-  linkage = "linkage method",
-  m = "minimum cluster size",
-  verbose = "verbosity level"
-)
-
 #' Print the parameters of a triplclust run.
 #'
 #' Prints the \code{$params} element of a \code{triplclust} object as a table
@@ -31,8 +7,7 @@
 #' the flag that states that they are a multiple of dNN, and with the suffix
 #' \code{_real} as the absolute number that was used.
 #'
-#' The same information is available programmatically from
-#' \code{attributes(tc$params)$description}.
+#' The meaning of each parameter is documented in \code{\link{triplclust}}.
 #'
 #' @param x The \code{params} element of a \code{triplclust} object.
 #' @param ... Further arguments passed to \code{print.data.frame}.
@@ -43,17 +18,12 @@
 #' @seealso triplclust
 #' @export
 print.triplclust_params <- function(x, ...) {
-  descriptions <- attr(x, "description")
   values <- vapply(x, function(value) {
     paste(format(value), collapse = ", ")
   }, character(1))
-  if (is.null(descriptions)) {
-    descriptions <- rep(NA_character_, length(x))
-  }
   table <- data.frame(
     parameter = names(x),
     value = unname(values),
-    description = unname(descriptions[names(x)]),
     stringsAsFactors = FALSE,
     row.names = NULL
   )
