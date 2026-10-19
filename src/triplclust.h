@@ -7,6 +7,7 @@
 #define TRIPLCLUST_H
 
 #include <cstddef>
+#include <limits>
 #include <vector>
 
 #include "cluster.h"
@@ -18,7 +19,9 @@ struct TriplClustDebugInfo {
   // absolute characteristic length dNN that was used for scaling the
   // parameters. 0 if no parameter depended on dNN.
   double dnn;
-  // absolute cluster distance threshold that was effectively applied
+  // absolute cluster distance threshold that was effectively applied.
+  // NaN if no threshold was applied at all, i.e. if the triplets were
+  // never clustered because none were generated.
   double t;
   // true if that threshold was determined automatically instead of being
   // given by the user
@@ -27,7 +30,8 @@ struct TriplClustDebugInfo {
   size_t pruned_clusters;
 
   TriplClustDebugInfo()
-      : dnn(0.0), t(0.0), t_auto(false), pruned_clusters(0) {}
+      : dnn(0.0), t(std::numeric_limits<double>::quiet_NaN()), t_auto(false),
+        pruned_clusters(0) {}
 };
 
 struct TriplClustParameters {

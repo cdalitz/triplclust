@@ -56,10 +56,8 @@ void calculate_distance_matrix(const std::vector<triplet> &triplets,
 //-------------------------------------------------------------------
 // Computation of the clustering.
 // The triplets in *triplets* are clustered by the fastcluster algorithm
-// and the result is returned as cluster_group. *t* is the cut distance
-// and *triplet_metric* is the distance metric for the triplets.
-// *opt_verbose* is the verbosity level for debug outputs. the clustering
-// is returned in *result*.
+// and the result is returned in *result* as cluster_group. *t* is the cut
+// distance.
 //-------------------------------------------------------------------
 void compute_hc(const PointCloud &cloud, cluster_group &result,
                 const std::vector<triplet> &triplets, double s, double t,

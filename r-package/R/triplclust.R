@@ -51,7 +51,8 @@
 #'      \item{`tauto`}{`TRUE` if `t` was determined automatically}
 #'      \item{`t_real`}{the absolute cluster distance threshold that was
 #'        actually applied, i.e. the automatically determined one when `tauto`
-#'        is `TRUE` and otherwise simply `t`}
+#'        is `TRUE` and otherwise simply `t`; `NaN` if no triplets were
+#'        generated, so that no threshold was applied at all}
 #'      \item{`dmax`}{max gap within a triplet as requested}
 #'      \item{`dmax_dnn`}{`TRUE` if `dmax` was given as a multiple of dNN}
 #'      \item{`is_dmax`}{`TRUE` if splitting of clusters at gaps is enabled}
