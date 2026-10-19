@@ -6,6 +6,7 @@
 #include "triplclust.h"
 
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 #include <vector>
 
@@ -105,7 +106,8 @@ bool validate_parameters( const PointCloud          &cloud,
 }             
 
 cluster_group triplclust(const PointCloud &cloud,
-                         const TriplClustParameters &parameters) {
+                         TriplClustParameters &parameters,
+                         std::vector<double> *cdist) {
     TriplClustParameters scaled_parameters = parameters;
   std::string validationError;
   if (!validate_parameters(cloud, parameters, validationError)) {
@@ -124,6 +126,7 @@ cluster_group triplclust(const PointCloud &cloud,
             throw std::invalid_argument(
                     "[triplclust] dNN computed as zero. Remove duplicate points.");
         }
+        scaled_parameters.debug.dnn = dnn;
         if (parameters.r_dnn) scaled_parameters.r *= dnn;
         if (parameters.s_dnn) scaled_parameters.s *= dnn;
         if (parameters.is_dmax && parameters.dmax_dnn) {
@@ -156,17 +159,19 @@ cluster_group triplclust(const PointCloud &cloud,
     generate_triplets(cloud_smooth, triplets, scaled_parameters.k,
                                         scaled_parameters.n, scaled_parameters.a);
 
-  // Step 3) single link hierarchical clustering of the triplets
-  cluster_group cl_group;
-    compute_hc(cloud_smooth, cl_group, triplets, scaled_parameters.s,
+// Step 3) single link hierarchical clustering of the triplets
+    cluster_group cl_group;
+    scaled_parameters.debug.t_auto = scaled_parameters.tauto;
+compute_hc(cloud_smooth, cl_group, triplets, scaled_parameters.s,
                          scaled_parameters.t, scaled_parameters.tauto,
                          scaled_parameters.dmax, scaled_parameters.is_dmax,
-                         scaled_parameters.linkage, scaled_parameters.verbose);
+                         scaled_parameters.linkage,
+                         &scaled_parameters.debug.t, cdist);
 
-  // Step 4) pruning by removal of small clusters
-    cleanup_cluster_group(cl_group, scaled_parameters.m,
-                                                scaled_parameters.verbose);
-  cluster_triplets_to_points(triplets, cl_group);
+    // Step 4) pruning by removal of small clusters
+    scaled_parameters.debug.pruned_clusters =
+        cleanup_cluster_group(cl_group, scaled_parameters.m);
+    cluster_triplets_to_points(triplets, cl_group);
 
   // Optionally split up clusters at gaps > dmax
     if (scaled_parameters.is_dmax) {
@@ -178,6 +183,10 @@ cluster_group triplclust(const PointCloud &cloud,
     }
     cl_group = cleaned_up_cluster_group;
   }
+
+    // hand the effectively used parameters back to the caller, so that it can
+    // report absolute values instead of multiples of dNN
+    parameters = scaled_parameters;
 
   return cl_group;
 }

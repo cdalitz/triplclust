@@ -30,6 +30,46 @@
 #'  \item labels: List with the assigned cluster labels encoded as one
 #'    integer vector per input point. Each vector contains the IDs of the
 #'    clusters containing that point. Unassigned points have an empty vector.
+#'  \item params: Named list with the parameters of the run. A parameter given
+#'    as a multiple of dNN has two entries: the plain name holds the requested
+#'    value and its `_dnn` flag states that it is a multiple of dNN (for
+#'    example `r` is `2` and `r_dnn` is `TRUE` for `"2dNN"`), while the
+#'    `_real` suffix holds the absolute value that was actually used. The
+#'    `_real` entries are resolved during the run and are only reported for
+#'    debugging and reproducibility; the algorithm does not use them.
+#'    \describe{
+#'      \item{`r`}{smoothing radius as requested}
+#'      \item{`r_dnn`}{`TRUE` if `r` was given as a multiple of dNN}
+#'      \item{`r_real`}{absolute smoothing radius used}
+#'      \item{`k`}{neighbours considered for triplet generation}
+#'      \item{`n`}{best triplets kept per midpoint}
+#'      \item{`a`}{max angle between the triplet branches}
+#'      \item{`s`}{distance scale as requested}
+#'      \item{`s_dnn`}{`TRUE` if `s` was given as a multiple of dNN}
+#'      \item{`s_real`}{absolute distance scale used}
+#'      \item{`t`}{cluster distance threshold as requested}
+#'      \item{`tauto`}{`TRUE` if `t` was determined automatically}
+#'      \item{`t_real`}{the absolute cluster distance threshold that was
+#'        actually applied, i.e. the automatically determined one when `tauto`
+#'        is `TRUE` and otherwise simply `t`; `NaN` if no triplets were
+#'        generated, so that no threshold was applied at all}
+#'      \item{`dmax`}{max gap within a triplet as requested}
+#'      \item{`dmax_dnn`}{`TRUE` if `dmax` was given as a multiple of dNN}
+#'      \item{`is_dmax`}{`TRUE` if splitting of clusters at gaps is enabled}
+#'      \item{`dmax_real`}{absolute max gap used}
+#'      \item{`dnn_real`}{the absolute characteristic length that was used for
+#'        scaling, `0` if no parameter depended on dNN}
+#'      \item{`linkage`}{linkage method}
+#'      \item{`m`}{minimum cluster size}
+#'      \item{`verbose`}{verbosity level, always `0` from the R interface}
+#'    }
+#'    Note that `k`, `n`, `a`, `linkage` and `m` are never rescaled and
+#'    therefore have no `_real` counterpart.
+#'  \item cdist: Numeric vector with the distance of each of the n-1 merge
+#'    steps of the triplet clustering, where n is the number of generated
+#'    triplets. The values are the heights of the dendrogram, in ascending
+#'    order. It is empty if no triplets were generated. These are the values
+#'    that the command line version writes to `debug_cdist.csv` for `-vv`.
 #' }
 #' @examples
 #' tc <- triplclust(attpc)
@@ -37,6 +77,13 @@
 #' noise <- tc$points[sapply(tc$labels, function(x) length(x)==0),]
 #' # points assigned to more than one cluster (intersections)
 #' intersections <- tc$points[sapply(tc$labels, function(x) length(x)>1),]
+#' # the parameters that were actually used, with dNN resolved
+#' tc$params
+#' # requested values and the values that were actually used
+#' tc$params[c("r", "r_dnn", "r_real")]
+#' tc$params[c("t", "tauto", "t_real")]
+#' # dendrogram heights of the triplet clustering
+#' tc$cdist
 #' @references Dalitz C., Wilberg J., Aymans L. (2019) TriplClust: An
 #'   Algorithm for Curve Detection in 3D Point Clouds.
 #'   \emph{Image Processing On Line} 9:26-46,
@@ -126,13 +173,19 @@ triplclust <- function(points, r = NULL, k = 19L, n = 2L, a = 0.03,
     stop("linkage must be 'single', 'complete', or 'average'", call. = FALSE)
   }
 
-  labels <- triplclust_rcpp( # nolint: object_usage_linter
+  result <- triplclust_rcpp( # nolint: object_usage_linter
     points, r$value, r$dnn, k, n, a,
     s$value, s$dnn, t, automatic,
     dmax$value, dmax$dnn, dmax$enabled,
-    linkage, m, verbose = 0, ordered
+    linkage, m, ordered
   )
-  structure(list(points = points, labels = labels), class = "triplclust")
+  params <- result$params
+  class(params) <- c("triplclust_params", "list")
+  structure(
+    list(points = points, labels = result$labels, params = params,
+         cdist = result$cdist),
+    class = "triplclust"
+  )
 }
 
 .parse_distance <- function(value, name, default, default_dnn = FALSE,

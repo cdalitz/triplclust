@@ -60,8 +60,6 @@ class Opt {
  public:
   Opt();
   int parse_args(int argc, char **argv);
-  // compute attributes which depend on dnn.
-  void set_dnn(double dnn);
 
   // read access functions
   const char *get_ifname();
@@ -73,14 +71,17 @@ class Opt {
   size_t get_skip();
   int get_verbosity();
   double get_r();
+  bool get_r_dnn();
   size_t get_k();
   size_t get_n();
   double get_a();
   double get_s();
+  bool get_s_dnn();
   bool is_tauto();
   double get_t();
   bool is_dmax();
   double get_dmax();
+  bool get_dmax_dnn();
   bool get_ordered();   //!
   Linkage get_linkage();
   size_t get_m();

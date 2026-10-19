@@ -219,31 +219,6 @@ std::pair<double, bool> Opt::parse_argument(const char* str) {
   return std::pair<double, bool>(result, dnn);
 }
 
-//-------------------------------------------------------------------
-// compute attributes which depend on dnn.
-// If r,s,dmax depend on dnn their new value will be computed.
-//-------------------------------------------------------------------
-void Opt::set_dnn(double dnn) {
-  if (this->rdnn) {
-    this->r *= dnn;
-    if (this->verbose > 0) {
-      std::cout << "[Info] computed smoothed radius: " << this->r << std::endl;
-    }
-  }
-  if (this->sdnn) {
-    this->s *= dnn;
-    if (this->verbose > 0) {
-      std::cout << "[Info] computed distance scale: " << this->s << std::endl;
-    }
-  }
-  if (this->dmax_dnn) {
-    this->dmax *= dnn;
-    if (this->verbose > 0) {
-      std::cout << "[Info] computed max gap: " << this->dmax << std::endl;
-    }
-  }
-}
-
 // read access functions
 const char* Opt::get_ifname() { return this->infile_name; }
 const char* Opt::get_ofprefix() { return this->outfile_prefix; }
@@ -253,14 +228,17 @@ size_t Opt::get_skip() { return this->skip; }
 char Opt::get_delimiter() { return this->delimiter; }
 int Opt::get_verbosity() { return this->verbose; }
 double Opt::get_r() { return this->r; }
+bool Opt::get_r_dnn() { return this->rdnn; }
 size_t Opt::get_k() { return this->k; }
 size_t Opt::get_n() { return this->n; }
 double Opt::get_a() { return this->a; }
 double Opt::get_s() { return this->s; }
+bool Opt::get_s_dnn() { return this->sdnn; }
 bool Opt::is_tauto() { return this->tauto; }
 double Opt::get_t() { return this->t; }
 bool Opt::is_dmax() { return this->isdmax; }
 double Opt::get_dmax() { return this->dmax; }
+bool Opt::get_dmax_dnn() { return this->dmax_dnn; }
 Linkage Opt::get_linkage() { return this->link; }
 size_t Opt::get_m() { return this->m; }
 bool Opt::get_ordered() {return this->ordered;}

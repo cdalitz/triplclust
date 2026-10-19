@@ -10,7 +10,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <fstream>
 
 #include "cluster.h"
 #include "hclust/fastcluster.h"
@@ -57,15 +56,13 @@ void calculate_distance_matrix(const std::vector<triplet> &triplets,
 //-------------------------------------------------------------------
 // Computation of the clustering.
 // The triplets in *triplets* are clustered by the fastcluster algorithm
-// and the result is returned as cluster_group. *t* is the cut distance
-// and *triplet_metric* is the distance metric for the triplets.
-// *opt_verbose* is the verbosity level for debug outputs. the clustering
-// is returned in *result*.
+// and the result is returned in *result* as cluster_group. *t* is the cut
+// distance.
 //-------------------------------------------------------------------
 void compute_hc(const PointCloud &cloud, cluster_group &result,
                 const std::vector<triplet> &triplets, double s, double t,
                 bool tauto, double dmax, bool is_dmax, Linkage method,
-                int opt_verbose) {
+                double *t_used, std::vector<double> *cdist) {
   const size_t triplet_size = triplets.size();
   size_t k, cluster_size;
   hclust_fast_methods link;
@@ -95,7 +92,12 @@ void compute_hc(const PointCloud &cloud, cluster_group &result,
 
   hclust_fast(triplet_size, distance_matrix, link, merge, cdists);
 
+  if (cdist) {
+    cdist->assign(cdists, cdists + (triplet_size - 1));
+  }
+
   // splitting the dendrogram into clusters
+  double threshold = t;
   if (tauto) {
     // automatic stopping criterion where cdist is unexpected large
     for (k = (triplet_size - 1) / 2; k < (triplet_size - 1); ++k) {
@@ -104,17 +106,9 @@ void compute_hc(const PointCloud &cloud, cluster_group &result,
         break;
       }
     }
-    if (opt_verbose) {
-      double automatic_t;
-      double prev_cdist = (k > 0) ? cdists[k - 1] : 0.0;
-      if (k < (triplet_size - 1)) {
-        automatic_t = (prev_cdist + cdists[k]) / 2.0;
-      } else {
-        automatic_t = cdists[k - 1];
-      }
-      std::cout << "[Info] optimal cdist threshold: " << automatic_t
-                << std::endl;
-    }
+    const double prev_cdist = (k > 0) ? cdists[k - 1] : 0.0;
+    threshold = (k < (triplet_size - 1)) ? (prev_cdist + cdists[k]) / 2.0
+                                          : prev_cdist;
   } else {
     // fixed threshold t
     for (k = 0; k < (triplet_size - 1); ++k) {
@@ -122,6 +116,9 @@ void compute_hc(const PointCloud &cloud, cluster_group &result,
         break;
       }
     }
+  }
+  if (t_used) {
+    *t_used = threshold;
   }
   cluster_size = triplet_size - k;
   cutree_k(triplet_size, merge, cluster_size, labels);
@@ -136,21 +133,6 @@ void compute_hc(const PointCloud &cloud, cluster_group &result,
     result[labels[i]].push_back(i);
   }
 
-  if (opt_verbose > 1) {
-    // write debug file
-    const char *fname = "debug_cdist.csv";
-    std::ofstream of(fname);
-    of << std::fixed;  // set float style
-    if (of.is_open()) {
-      for (size_t i = 0; i < (triplet_size - 1); ++i) {
-        of << cdists[i] << std::endl;
-      }
-    } else {
-      std::cerr << "[Error] could not write file '" << fname << "'\n";
-    }
-    of.close();
-  }
-
   // cleanup
   delete[] distance_matrix;
   delete[] cdists;
@@ -160,9 +142,10 @@ void compute_hc(const PointCloud &cloud, cluster_group &result,
 
 //-------------------------------------------------------------------
 // Remove all clusters in *cl_group* which contains less then *m*
-// triplets. *cl_group* will be modified.
+// triplets. *cl_group* will be modified. Returns the number of removed
+// clusters.
 //-------------------------------------------------------------------
-void cleanup_cluster_group(cluster_group &cl_group, size_t m, int opt_verbose) {
+size_t cleanup_cluster_group(cluster_group &cl_group, size_t m) {
   size_t old_size = cl_group.size();
   cluster_group::iterator it = cl_group.begin();
   while (it != cl_group.end()) {
@@ -172,10 +155,7 @@ void cleanup_cluster_group(cluster_group &cl_group, size_t m, int opt_verbose) {
       ++it;
     }
   }
-  if (opt_verbose > 0) {
-    std::cout << "[Info] in pruning removed clusters: "
-              << old_size - cl_group.size() << std::endl;
-  }
+  return old_size - cl_group.size();
 }
 
 //-------------------------------------------------------------------

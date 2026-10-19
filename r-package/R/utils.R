@@ -179,6 +179,51 @@ save_csv <- function(tc, file) {
   close(f)
 }
 
+#' Get the cdist threshold trace as it would be written to disk.
+#'
+#' Returns the content of the file that the command line version of
+#' TriplClust writes to \code{debug_cdist.csv} when it is run with
+#' \code{-vv}: one merge distance per line, in fixed notation with six
+#' decimal places, each terminated by a newline. These are the dendrogram
+#' heights whose jump marks the threshold that was applied; see
+#' \code{tc$params$t_real}. The file is not written; use \code{writeLines}
+#' or \code{cat} if you want to save the result.
+#'
+#' @param triplclust An object of class `triplclust` as returned by
+#'   \code{triplclust()}.
+#' @return A single character string with the full content of the trace file,
+#'   or the empty string if no triplets were generated and the file would be
+#'   empty as well.
+#' @examples
+#' tc <- triplclust(attpc)
+#' # first lines of the trace
+#' head(strsplit(plot_threshold(tc), "\n", fixed = TRUE)[[1]], 3)
+#' # save it
+#' \dontrun{
+#' writeLines(plot_threshold(tc), "debug_cdist.csv")
+#' }
+#' @seealso triplclust
+#' @export
+plot_threshold <- function(triplclust) {
+  if (!("triplclust" %in% class(triplclust))) {
+    stop("triplclust must be of class 'triplclust'", call. = FALSE)
+  }
+  cdist <- triplclust$cdist
+  if (is.null(cdist)) {
+    stop("triplclust does not contain the cdist values", call. = FALSE)
+  }
+  if (!is.numeric(cdist)) {
+    stop("the cdist values must be numeric", call. = FALSE)
+  }
+  if (length(cdist) == 0L) {
+    # the C++ loop writes nothing, so the file would be empty
+    return("")
+  }
+  # same as "std::fixed" with the default precision of 6
+  lines <- formatC(cdist, digits = 6, format = "f")
+  paste0(paste0(lines, collapse = "\n"), "\n")
+}
+
 
 .prepare_export_data <- function(points, labels) {
   if (is.list(labels)) {
