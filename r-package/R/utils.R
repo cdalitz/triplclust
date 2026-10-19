@@ -25,6 +25,10 @@
 #' points3D(tc$points[,1], tc$points[,2], tc$points[,3],
 #'          colvar=1:length(colors), col=colors, colkey=F)
 #' }
+#' @references Dalitz C., Wilberg J., Aymans L. (2019) TriplClust: An
+#'   Algorithm for Curve Detection in 3D Point Clouds.
+#'   \emph{Image Processing On Line} 9:26-46,
+#'   \doi{10.5201/ipol.2019.234}
 #' @seealso triplclust
 #' @export
 label_colors <- function(labels) {
@@ -179,52 +183,64 @@ save_csv <- function(tc, file) {
   close(f)
 }
 
-#' Get the cdist threshold trace as it would be written to disk.
+#' Plots the automatically chosen threshold by triplclust amongst the
+#' clustering distances.
 #'
-#' Returns the content of the file that the command line version of
-#' TriplClust writes to \code{debug_cdist.csv} when it is run with
-#' \code{-vv}: one merge distance per line, in fixed notation with six
-#' decimal places, each terminated by a newline. These are the dendrogram
-#' heights whose jump marks the threshold that was applied; see
-#' \code{tc$params$t_real}. The file is not written; use \code{writeLines}
-#' or \code{cat} if you want to save the result.
+#' The distance cdist between clusters in each clustering step is
+#' plotted as a function of the number of clusters and the rightmost value
+#' is drawn into the plot where the cdist value is greater than
+#' mean(cdits) + 2*sd(cdist).
 #'
 #' @param triplclust An object of class `triplclust` as returned by
 #'   \code{triplclust()}.
-#' @return A single character string with the full content of the trace file,
-#'   or the empty string if no triplets were generated and the file would be
-#'   empty as well.
 #' @examples
 #' tc <- triplclust(attpc)
-#' # first lines of the trace
-#' head(strsplit(plot_threshold(tc), "\n", fixed = TRUE)[[1]], 3)
-#' # save it
-#' \dontrun{
-#' writeLines(plot_threshold(tc), "debug_cdist.csv")
-#' }
+#' plot_threshold(tc)
 #' @seealso triplclust
 #' @export
 plot_threshold <- function(triplclust) {
   if (!("triplclust" %in% class(triplclust))) {
     stop("triplclust must be of class 'triplclust'", call. = FALSE)
   }
-  cdist <- triplclust$cdist
-  if (is.null(cdist)) {
-    stop("triplclust does not contain the cdist values", call. = FALSE)
+  if (is.null(triplclust$cdist) | !is.numeric(triplclust$cdist)) {
+    stop("triplclust must contain numeric entry cdit", call. = FALSE)
   }
-  if (!is.numeric(cdist)) {
-    stop("the cdist values must be numeric", call. = FALSE)
+  x <- rev(triplclust$cdist)
+  if (length(x) == 0L) {
+    warning("triplclust$cdist empty: nothing plotted")
+    return()
   }
-  if (length(cdist) == 0L) {
-    # the C++ loop writes nothing, so the file would be empty
-    return("")
+  # two sigma expected jump width
+  .expjump <- function(x,k) {
+    y <- rep(0,k) # preallocation
+    for (i in 1:k) {
+      y[i] <- x[i+1] + 2*stats::sd(x[i:n], na.rm=TRUE)
+    }
+    return(y)
   }
-  # same as "std::fixed" with the default precision of 6
-  lines <- formatC(cdist, digits = 6, format = "f")
-  paste0(paste0(lines, collapse = "\n"), "\n")
+
+  # plot only last 80 cdist values
+  n <- length(x)
+  k <- min(c(80,n-1))
+  x.tail <- x[1:k]
+  graphics::plot(1:k, x.tail, type='l', xlab=expression(italic('number of clusters, i.e. ') (m-i)), ylab=expression(italic('cdist')), mgp=c(2.5,1,0))
+  graphics::points(1:k, x.tail)
+
+  # plot comparison line of automatic threshold
+  cyan <- grDevices::rgb(007,161,226,maxColorValue=255)
+  z <- .expjump(x,k)
+  graphics::lines(1:k, z, col="red")
+  if (any(z[1:k] < x[1:k])) {
+    t.index <- max(which(z[1:k] < x[1:k]))
+    t <- z[t.index]
+    graphics::lines(c(-1,k+4), c(t,t), col=cyan)
+    graphics::text(expression(italic('automatic threshold')), x=k-15, y=t, pos=3, col=cyan)
+  }
+  graphics::legend("topright", c(expression(italic("cdist")[i]), expression(italic("cdist")[i-1] + sigma^{(i)})), col=c("black","red"), lty=c(1,1))
 }
 
 
+# grouping of points by cluster labels
 .prepare_export_data <- function(points, labels) {
   if (is.list(labels)) {
     if (length(labels) != nrow(points)) {
@@ -291,6 +307,7 @@ plot_threshold <- function(triplclust) {
   )
 }
 
+# "random" generator for cluster colors
 .plot_color_hex <- function(cluster_index) {
   idx <- as.integer(cluster_index)
   red <- ((idx * 23L) %% 19L) / 18

@@ -68,8 +68,7 @@
 #'  \item cdist: Numeric vector with the distance of each of the n-1 merge
 #'    steps of the triplet clustering, where n is the number of generated
 #'    triplets. The values are the heights of the dendrogram, in ascending
-#'    order. It is empty if no triplets were generated. These are the values
-#'    that the command line version writes to `debug_cdist.csv` for `-vv`.
+#'    order. It is empty if no triplets were generated.
 #' }
 #' @examples
 #' tc <- triplclust(attpc)
@@ -88,7 +87,7 @@
 #'   Algorithm for Curve Detection in 3D Point Clouds.
 #'   \emph{Image Processing On Line} 9:26-46,
 #'   \doi{10.5201/ipol.2019.234}
-#' @seealso label_colors save_csv save_gnuplot
+#' @seealso label_colors plot_threshold save_csv save_gnuplot
 #' @export
 triplclust <- function(points, r = NULL, k = 19L, n = 2L, a = 0.03,
                        s = NULL, t = "auto", dmax = NULL,
