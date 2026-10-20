@@ -1,6 +1,10 @@
 Change log of triplclust
 =========================
 
+ - R-package:
+    o triplclust returns additional info (cdist, params)
+	o new function plot_threshold()
+
  - corrected erroneous range check for parameter -a
 
  - now again C++98 compatible
