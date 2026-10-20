@@ -31,9 +31,9 @@
 #'    integer vector per input point. Each vector contains the IDs of the
 #'    clusters containing that point. Unassigned points have an empty vector.
 #'  \item params: Named list with the parameters of the run. A parameter given
-#'    as a multiple of dNN has two entries: the plain name holds the requested
+#'    as a multiple of dNN has three entries: the plain name holds the requested
 #'    value and its `_dnn` flag states that it is a multiple of dNN (for
-#'    example `r` is `2` and `r_dnn` is `TRUE` for `"2dNN"`), while the
+#'    example `r` is `2` and `r_dnn` is `TRUE` for `"2dNN"`), whereas the
 #'    `_real` suffix holds the absolute value that was actually used. The
 #'    `_real` entries are resolved during the run and are only reported for
 #'    debugging and reproducibility; the algorithm does not use them.
@@ -61,7 +61,6 @@
 #'        scaling, `0` if no parameter depended on dNN}
 #'      \item{`linkage`}{linkage method}
 #'      \item{`m`}{minimum cluster size}
-#'      \item{`verbose`}{verbosity level, always `0` from the R interface}
 #'    }
 #'    Note that `k`, `n`, `a`, `linkage` and `m` are never rescaled and
 #'    therefore have no `_real` counterpart.
@@ -72,17 +71,16 @@
 #' }
 #' @examples
 #' tc <- triplclust(attpc)
+#' 
 #' # points not assigned to any cluster (noise)
 #' noise <- tc$points[sapply(tc$labels, function(x) length(x)==0),]
 #' # points assigned to more than one cluster (intersections)
 #' intersections <- tc$points[sapply(tc$labels, function(x) length(x)>1),]
-#' # the parameters that were actually used, with dNN resolved
-#' tc$params
-#' # requested values and the values that were actually used
-#' tc$params[c("r", "r_dnn", "r_real")]
+#' 
+#' # input values or threhsold and actual value used (t_real)
 #' tc$params[c("t", "tauto", "t_real")]
-#' # dendrogram heights of the triplet clustering
-#' tc$cdist
+#' # visualization of threshold among the clustering distances
+#' plot_threshold(tc)
 #' @references Dalitz C., Wilberg J., Aymans L. (2019) TriplClust: An
 #'   Algorithm for Curve Detection in 3D Point Clouds.
 #'   \emph{Image Processing On Line} 9:26-46,

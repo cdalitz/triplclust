@@ -6,7 +6,7 @@ R package providing an interface to the **TriplClust** algorithm for 3D point-cl
 From the subdirectory `r-package` of the repository root, build the source tarball with:
 
 ```bash
-./makecrandist.sh
+bash ./makecrandist.sh
 ```
 
 This creates the source tarball `triplclust_*.*.*.tar.gz` that is installed with
@@ -56,7 +56,6 @@ system("gnuplot -persist /tmp/tc.gnuplot")
 # save result as CSV file
 save_csv(tc, "result.csv")
 
-# content of the cdist threshold trace, as the command line version writes
-# it to debug_cdist.csv with -vv. Nothing is written to disk here.
-writeLines(plot_threshold(tc), "debug_cdist.csv")
+# show cluster distances during hierarchical clustering and chosen threshold
+plot_threshold(tc)
 ```

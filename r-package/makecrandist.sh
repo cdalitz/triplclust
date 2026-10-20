@@ -73,6 +73,9 @@ if [[ ! -f NAMESPACE ]]; then
 fi
 Rscript -e "Rcpp::compileAttributes('.')"
 Rscript -e "roxygen2::roxygenise('.', roclets = c('namespace', 'collate', 'rd'))"
+# because triplclust is both the package and function name, "Useful links"
+# show up in the function documentation. Remove it until the next blank line.
+sed '/^Useful links:/,/^$/d' man/triplclust.Rd >bla && mv bla man/triplclust.Rd
 
 # ---------- Step 6: build the tarball ----------
 rm -rf build  # must not ship (also excluded via .Rbuildignore)

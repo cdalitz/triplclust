@@ -70,8 +70,7 @@ Rcpp::List triplclust_rcpp(
       Rcpp::Named("dmax_real") = params.dmax,
       Rcpp::Named("dnn_real") = params.debug.dnn,
       Rcpp::Named("linkage") = linkage_name,
-      Rcpp::Named("m") = static_cast<int>(params.m),
-      Rcpp::Named("verbose") = params.verbose
+      Rcpp::Named("m") = static_cast<int>(params.m)
   );
 
   Rcpp::List point_clusters(cloud.size());

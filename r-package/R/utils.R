@@ -187,10 +187,12 @@ save_csv <- function(tc, file) {
 #' clustering distances.
 #'
 #' The distance cdist between clusters in each clustering step is
-#' plotted as a function of the number of clusters and the rightmost value
-#' is drawn into the plot where the cdist value is greater than
-#' mean(cdits) + 2*sd(cdist).
+#' plotted as a function of the number of clusters. Additionally the
+#' maximium "expected next cdist" mean(cdits) + 2*sd(cdist) is plotted,
+#' which is used by the automatic thresold selection.
 #'
+#' The actually chosen threshold t_real is shown, too.
+#' 
 #' @param triplclust An object of class `triplclust` as returned by
 #'   \code{triplclust()}.
 #' @examples
@@ -230,12 +232,9 @@ plot_threshold <- function(triplclust) {
   cyan <- grDevices::rgb(007,161,226,maxColorValue=255)
   z <- .expjump(x,k)
   graphics::lines(1:k, z, col="red")
-  if (any(z[1:k] < x[1:k])) {
-    t.index <- max(which(z[1:k] < x[1:k]))
-    t <- z[t.index]
-    graphics::lines(c(-1,k+4), c(t,t), col=cyan)
-    graphics::text(expression(italic('automatic threshold')), x=k-15, y=t, pos=3, col=cyan)
-  }
+  t <- triplclust$params$t_real
+  graphics::lines(c(-1,k+4), c(t,t), col=cyan)
+  graphics::text(expression(italic('t_real')), x=k-15, y=t, pos=3, col=cyan)
   graphics::legend("topright", c(expression(italic("cdist")[i]), expression(italic("cdist")[i-1] + sigma^{(i)})), col=c("black","red"), lty=c(1,1))
 }
 

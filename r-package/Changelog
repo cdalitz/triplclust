@@ -2,10 +2,12 @@ Changelog for triplclust
 ========================
 
  - triplclust now returns information about clustering process in
-   list entries "params" and "cdist"
+   entries "params" and "cdist"
 
  - new function plot_threshold() to visualize automatic threshold selection
-	
+
+ - "Useful links" removed from function documentation of triplclust()
+
 
 Version 1.0.0 from 2026-10-10
 =============================
