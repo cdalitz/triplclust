@@ -1,5 +1,4 @@
-#' @title triplclust – R interface to the TriplClust algorithm
-#' @name triplclust
+#' @title triplclust - Algorithm for curve detection in 3D point clouds
 #' @docType package
 #' @keywords internal
 #' @useDynLib triplclust, .registration = TRUE

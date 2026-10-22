@@ -1,5 +1,9 @@
-#' Cluster a 3D point cloud with the TriplClust algorithm.
+#' Cluster 3D point cloud into curves and noise.
 #'
+#' The TriplClust algorithm assigns each point in a 3D or 2D point cloud a
+#' cluster label representing curves or noise. It can be used to detect
+#' curves in point clouds. TriplClust is based on hierarchical clustering
+#' of point triplets and is explained in Dalitz et al. (2019).
 #' @param points Numeric matrix or data.frame with the point coordinates,
 #'   one point per line. If it has more than three columns, the columns
 #'   named `"x"`, `"y"`, and `"z"` are used or, if there are no columns
@@ -19,7 +23,8 @@
 #' @param dmax Optional maximum gap for splitting clusters. Accepts a finite
 #'   numeric scalar, a dNN-scaled string such as `"2.5dNN"` (case-insensitive
 #'   suffix), or `"none"`.
-#' @param linkage Linkage method: `"single"`, `"complete"`, or `"average"`.
+#' @param linkage Linkage method for the hierarchical clustering step:
+#'   `"single"`, `"complete"`, or `"average"`.
 #' @param m Minimum cluster size retained by pruning.
 #' @param ordered Logical flag. If `TRUE`, treat the input as an ordered point
 #'   sequence, matching the CLI `-ordered` option.
@@ -30,6 +35,8 @@
 #'  \item labels: List with the assigned cluster labels encoded as one
 #'    integer vector per input point. Each vector contains the IDs of the
 #'    clusters containing that point. Unassigned points have an empty vector.
+#'    This means that points can be assigned to a single cluster (curve points),
+#'    several clusters (intersection points of curves) or no cluster (noise).
 #'  \item params: Named list with the parameters of the run. A parameter given
 #'    as a multiple of dNN has three entries: the plain name holds the requested
 #'    value and its `_dnn` flag states that it is a multiple of dNN (for
@@ -76,7 +83,12 @@
 #' noise <- tc$points[sapply(tc$labels, function(x) length(x)==0),]
 #' # points assigned to more than one cluster (intersections)
 #' intersections <- tc$points[sapply(tc$labels, function(x) length(x)>1),]
-#' 
+#'
+#' \donttest{# visualize result
+#' library(rgl)
+#' plot3d(tc$points, col=label_colors(tc))
+#' }
+#'
 #' # input values or threhsold and actual value used (t_real)
 #' tc$params[c("t", "tauto", "t_real")]
 #' # visualization of threshold among the clustering distances

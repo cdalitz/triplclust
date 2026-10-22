@@ -1,9 +1,13 @@
 Change log of triplclust
 =========================
 
+Version 1.6 from 2026-10-22
+---------------------------
+
  - R-package:
     o triplclust returns additional info (cdist, params)
 	o new function plot_threshold()
+	o documentation fixes as requested by CRAN reviewer
 
  - corrected erroneous range check for parameter -a
 

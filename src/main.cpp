@@ -50,7 +50,7 @@ const char *usage =
     "\t-v             be verbose\n"
     "\t-vv            be more verbose and write debug trace files\n"
     "Version:\n"
-    "\t1.5 from 2026-10-10";
+    "\t1.6 from 2026-10-22";
 
 int main(int argc, char **argv) {
   // parse commandline

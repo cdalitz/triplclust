@@ -1,18 +1,19 @@
-#' Convert labels to colors for visualizations.
+#' Convert triplclust labels to colors.
 #'
+#' For noise points (no cluster label), red is returned, for intersection
+#' points (more than one cluster label), black is returned. For all other
+#' cluster labels, a unique color is computed with modulo arithmetic.
+#' 
 #' @param labels List containing the labels as returned by \code{triplclust()}.
 #'   Alternatively a `triplclust` object can be provided as returned by
 #'   \code{triplclust()}.
 #'
-#' For noise points (no cluster label), red is returned, for intersection
-#' points (more than one cluster label), black is returned. All other cluster
-#' labels are colored with a unique color generated with modulo arithmetic.
-#' @return Character vector of the same length as `labels` with RGB colors.
+#' @return Character vector of RGB colors with the same length as `labels`.
 #' @examples
 #' tc <- triplclust(attpc)
 #' colors <- label_colors(tc)
 #'
-#' \dontrun{# visualization with rgl
+#' \donttest{# visualization with rgl
 #' library(rgl)
 #' plot3d(tc$points, col=colors)
 #'
@@ -45,13 +46,20 @@ label_colors <- function(labels) {
   cols
 }
 
-#' Save triplclust result to gnuplot command file for plotting.
+#' Save triplclust result to gnuplot command file.
 #'
 #' Noise is plotted in red, points with multiple cluster memberships
 #' are plotted as a separate overlap series. The plot can be shown
 #' from the command line with `gnuplot -persist`.
+#'
 #' @param tc An object of class `triplclust` as returned by \code{triplclust()}.
 #' @param file File name.
+#' @return No return value, writes a file with gnuplot commands.
+#' @examples
+#' \donttest{tc <- triplclust(attpc)
+#' save_gnuplot(tc, file="/tmp/bla.gnuplot")
+#' system("gnuplot -persist /tmp/bla.gnuplot")
+#' }
 #' @seealso triplclust
 #' @export
 save_gnuplot <- function(tc, file) {
@@ -140,7 +148,7 @@ save_gnuplot <- function(tc, file) {
   close(f)
 }
 
-#' Save triplclust result as a CSV file.
+#' Save triplclust result as CSV file.
 #'
 #' The CSV is comma separated with four columns, the x, y, z coordinates,
 #' and the cluster label. For noise, the special label `-1` is used
@@ -149,6 +157,7 @@ save_gnuplot <- function(tc, file) {
 #'
 #' @param tc An object of class `triplclust` as returned by \code{triplclust()}.
 #' @param file File name.
+#' @return No return value, writes a file.
 #' @seealso triplclust
 #' @export
 save_csv <- function(tc, file) {
@@ -183,8 +192,7 @@ save_csv <- function(tc, file) {
   close(f)
 }
 
-#' Plots the automatically chosen threshold by triplclust amongst the
-#' clustering distances.
+#' Plots triplclust threshold amongst the clustering distances.
 #'
 #' The distance cdist between clusters in each clustering step is
 #' plotted as a function of the number of clusters. Additionally the
@@ -195,6 +203,7 @@ save_csv <- function(tc, file) {
 #' 
 #' @param triplclust An object of class `triplclust` as returned by
 #'   \code{triplclust()}.
+#' @return No return value, displays a plot.
 #' @examples
 #' tc <- triplclust(attpc)
 #' plot_threshold(tc)

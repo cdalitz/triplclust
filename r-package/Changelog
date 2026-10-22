@@ -1,12 +1,21 @@
 Changelog for triplclust
 ========================
 
+Version 2.0.0 from 2026-10-21
+=============================
+
  - triplclust now returns information about clustering process in
    entries "params" and "cdist"
 
  - new function plot_threshold() to visualize automatic threshold selection
 
- - "Useful links" removed from function documentation of triplclust()
+ - documentation improvements
+    o if a functions return no value, that is now documented
+	o all functions now have a description
+	o documentation of function triplclust() separated
+	  from package documentation
+	o examples that use unnecessary third party dependencies
+	  now wrapped with donttest instead of dontrun
 
 
 Version 1.0.0 from 2026-10-10

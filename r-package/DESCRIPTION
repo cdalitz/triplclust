@@ -1,6 +1,6 @@
 Package: triplclust
 Type: Package
-Title: R Interface to the TriplClust Algorithm
+Title: Algorithm for Curve Detection in 3D Point Clouds
 Version: 2.0.0
 Date: 2026-10-18
 Authors@R: c(
@@ -11,7 +11,7 @@ Authors@R: c(
 		person("Vitali", "Krieger", role = c("aut"), email = NA)
 	)
 Maintainer: Christoph Dalitz <christoph.dalitz@hs-niederrhein.de>
-Description: Assigns each point in a 3D or 2D point cloud a cluster label representing curves or noise. It can be used to detect curves in point clouds. The algorithm is explained in Dalitz et al. (2019) <doi:10.5201/ipol.2019.234>.
+Description: The TriplClust algorithm assigns each point in a 3D or 2D point cloud a cluster label representing curves or noise. It can be used to detect curves in point clouds. TriplClust is based on hierarchical clustering of point triplets and is explained in Dalitz et al. (2019) <doi:10.5201/ipol.2019.234>.
 Depends: R (>= 3.5.0)
 License: BSD_2_clause + file LICENSE
 URL: https://github.com/cdalitz/triplclust/
