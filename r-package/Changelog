@@ -1,6 +1,13 @@
 Changelog for triplclust
 ========================
 
+Version 2.0.1 from 2026-10-21
+=============================
+
+ - R examples that use unrequired libraries again wrapped in dontrun,
+   because otherwise the package is rejected by CRAN
+
+
 Version 2.0.0 from 2026-10-21
 =============================
 

@@ -13,7 +13,7 @@
 #' tc <- triplclust(attpc)
 #' colors <- label_colors(tc)
 #'
-#' \donttest{# visualization with rgl
+#' \dontrun{# visualization with rgl
 #' library(rgl)
 #' plot3d(tc$points, col=colors)
 #'

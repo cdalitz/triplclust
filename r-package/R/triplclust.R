@@ -84,7 +84,7 @@
 #' # points assigned to more than one cluster (intersections)
 #' intersections <- tc$points[sapply(tc$labels, function(x) length(x)>1),]
 #'
-#' \donttest{# visualize result
+#' \dontrun{# visualize result
 #' library(rgl)
 #' plot3d(tc$points, col=label_colors(tc))
 #' }
